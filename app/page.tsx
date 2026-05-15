@@ -96,7 +96,10 @@ function Nav({ right }: any) {
 function Landing({ onStart }: any) {
   return (
     <div style={{ minHeight: "100vh", background: theme.cream }}>
-      <Nav right={<Btn onClick={onStart}>Get Your Operations Manual</Btn>} />
+      <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+  <a href="/login" style={{ fontSize: 13, color: "#6B6560", textDecoration: "none", fontFamily: "'DM Sans',sans-serif", letterSpacing: "0.04em" }}>Client Login</a>
+  <Btn onClick={onStart}>Get Your Operations Manual</Btn>
+</div>
       <section style={{ maxWidth: 900, margin: "0 auto", padding: "100px 48px 80px", textAlign: "center" }}>
         <div className="fu1" style={{ display: "inline-block", background: theme.goldLight, padding: "6px 16px", borderRadius: 2, fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 32, fontWeight: 500 }}>Built exclusively for med spas</div>
         <h1 className="fu2" style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(42px,7vw,76px)", fontWeight: 300, lineHeight: 1.1, marginBottom: 28 }}>
