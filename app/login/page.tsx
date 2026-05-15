@@ -64,7 +64,8 @@ export default function LoginPage() {
             <p className="sign-in-sub">Sign in with Google or your email — no password needed.</p>
           </div>
           <SignIn
-            appearance={{
+  routing="hash"
+  appearance={{
               elements: {
                 rootBox: "clerk-root",
                 card: "clerk-card",
