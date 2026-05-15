@@ -97,7 +97,7 @@ function Landing({ onStart }: any) {
   return (
     <div style={{ minHeight: "100vh", background: theme.cream }}>
       <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-  <a href="/login" style={{ fontSize: 13, color: "#6B6560", textDecoration: "none", fontFamily: "'DM Sans',sans-serif", letterSpacing: "0.04em" }}>Client Login</a>
+ <a href="/login" style={{fontSize:13,color:"#1A1612",textDecoration:"none",fontFamily:"'DM Sans',sans-serif",fontWeight:500,padding:"10px 20px",border:"1.5px solid #E8E2D9",borderRadius:2,letterSpacing:"0.08em",textTransform:"uppercase" as const}}>Client Login</a>
   <Btn onClick={onStart}>Get Your Operations Manual</Btn>
 </div>
       <section style={{ maxWidth: 900, margin: "0 auto", padding: "100px 48px 80px", textAlign: "center" }}>
