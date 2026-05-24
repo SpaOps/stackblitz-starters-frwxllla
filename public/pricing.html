@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SpaOps — Pricing</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream: #F7F3EE;
+    --warm-white: #FDFAF7;
+    --charcoal: #1C1917;
+    --stone: #78716C;
+    --gold: #B8975A;
+    --gold-light: #D4B483;
+    --sage: #6B7C6E;
+    --blush: #E8DDD4;
+    --border: rgba(28,25,23,0.1);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Mono', monospace;
+    background: var(--cream);
+    color: var(--charcoal);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grain overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0.4;
+  }
+
+  /* NAV */
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem 4rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--warm-white);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    backdrop-filter: blur(8px);
+  }
+
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem;
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    color: var(--charcoal);
+    text-decoration: none;
+  }
+
+  .nav-logo span {
+    color: var(--gold);
+  }
+
+  .nav-badge {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--stone);
+    border: 1px solid var(--border);
+    padding: 0.35rem 0.8rem;
+    border-radius: 2px;
+  }
+
+  /* HERO */
+  .hero {
+    padding: 7rem 4rem 5rem;
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6rem;
+    align-items: center;
+  }
+
+  .hero-eyebrow {
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .hero-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 2rem;
+    height: 1px;
+    background: var(--gold);
+  }
+
+  .hero h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 4rem;
+    font-weight: 300;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    margin-bottom: 1.5rem;
+    color: var(--charcoal);
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .hero-sub {
+    font-size: 0.8rem;
+    line-height: 1.8;
+    color: var(--stone);
+    max-width: 38ch;
+    letter-spacing: 0.02em;
+  }
+
+  /* PRICING CARD */
+  .pricing-card {
+    background: var(--charcoal);
+    border-radius: 4px;
+    padding: 3rem;
+    position: relative;
+    overflow: hidden;
+    animation: fadeUp 0.8s ease 0.2s both;
+  }
+
+  .pricing-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light), var(--gold));
+  }
+
+  .pricing-card::after {
+    content: '';
+    position: absolute;
+    bottom: -4rem;
+    right: -4rem;
+    width: 12rem;
+    height: 12rem;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(184,151,90,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .card-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 2rem;
+  }
+
+  .price-display {
+    margin-bottom: 2rem;
+  }
+
+  .price-amount {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 4.5rem;
+    font-weight: 300;
+    color: var(--warm-white);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .price-period {
+    font-size: 0.7rem;
+    color: var(--stone);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-top: 0.5rem;
+  }
+
+  .card-divider {
+    height: 1px;
+    background: rgba(255,255,255,0.08);
+    margin: 2rem 0;
+  }
+
+  .feature-list {
+    list-style: none;
+    margin-bottom: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  .feature-list li {
+    font-size: 0.72rem;
+    color: rgba(253,250,247,0.75);
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .feature-list li::before {
+    content: '✦';
+    color: var(--gold);
+    font-size: 0.5rem;
+    flex-shrink: 0;
+  }
+
+  .cta-btn {
+    display: block;
+    width: 100%;
+    padding: 1.1rem;
+    background: var(--gold);
+    color: var(--charcoal);
+    text-align: center;
+    text-decoration: none;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    border-radius: 2px;
+    font-weight: 500;
+    transition: background 0.2s ease, transform 0.2s ease;
+    border: none;
+    cursor: pointer;
+  }
+
+  .cta-btn:hover {
+    background: var(--gold-light);
+    transform: translateY(-1px);
+  }
+
+  .card-note {
+    text-align: center;
+    font-size: 0.6rem;
+    color: var(--stone);
+    letter-spacing: 0.1em;
+    margin-top: 1rem;
+  }
+
+  /* FEATURES SECTION */
+  .features {
+    padding: 6rem 4rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 4rem;
+  }
+
+  .section-header h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.2rem;
+    font-weight: 300;
+    letter-spacing: 0.02em;
+  }
+
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+
+  .feature-item {
+    background: var(--warm-white);
+    padding: 2.5rem;
+    transition: background 0.2s ease;
+  }
+
+  .feature-item:hover {
+    background: var(--blush);
+  }
+
+  .feature-icon {
+    font-size: 1.2rem;
+    margin-bottom: 1.2rem;
+    display: block;
+  }
+
+  .feature-item h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem;
+    font-weight: 400;
+    margin-bottom: 0.75rem;
+    letter-spacing: 0.02em;
+  }
+
+  .feature-item p {
+    font-size: 0.72rem;
+    line-height: 1.8;
+    color: var(--stone);
+    letter-spacing: 0.02em;
+  }
+
+  /* TESTIMONIAL / CALLOUT */
+  .callout {
+    margin: 0 4rem;
+    padding: 4rem;
+    background: var(--sage);
+    border-radius: 4px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 3rem;
+    align-items: center;
+  }
+
+  .callout-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--warm-white);
+    line-height: 1.4;
+    max-width: 50ch;
+  }
+
+  .callout-cta {
+    display: inline-block;
+    padding: 1rem 2rem;
+    border: 1px solid rgba(253,250,247,0.4);
+    color: var(--warm-white);
+    text-decoration: none;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    border-radius: 2px;
+    white-space: nowrap;
+    transition: background 0.2s, border-color 0.2s;
+  }
+
+  .callout-cta:hover {
+    background: rgba(253,250,247,0.1);
+    border-color: rgba(253,250,247,0.7);
+  }
+
+  /* FAQ */
+  .faq {
+    padding: 6rem 4rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .faq-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 3rem;
+    margin-top: 3rem;
+  }
+
+  .faq-item h4 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+    margin-bottom: 0.75rem;
+  }
+
+  .faq-item p {
+    font-size: 0.72rem;
+    line-height: 1.8;
+    color: var(--stone);
+    letter-spacing: 0.02em;
+  }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2.5rem 4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--warm-white);
+  }
+
+  .footer-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    color: var(--charcoal);
+  }
+
+  .footer-logo span { color: var(--gold); }
+
+  .footer-note {
+    font-size: 0.65rem;
+    color: var(--stone);
+    letter-spacing: 0.1em;
+  }
+
+  footer a {
+    font-size: 0.65rem;
+    color: var(--stone);
+    text-decoration: none;
+    letter-spacing: 0.1em;
+  }
+
+  footer a:hover { color: var(--charcoal); }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-left { animation: fadeUp 0.7s ease both; }
+  .pricing-card { animation: fadeUp 0.7s ease 0.15s both; }
+  .feature-item { animation: fadeUp 0.6s ease both; }
+  .feature-item:nth-child(2) { animation-delay: 0.1s; }
+  .feature-item:nth-child(3) { animation-delay: 0.15s; }
+  .feature-item:nth-child(4) { animation-delay: 0.2s; }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    nav { padding: 1.5rem 1.5rem; }
+    .hero { grid-template-columns: 1fr; gap: 3rem; padding: 4rem 1.5rem 3rem; }
+    .hero h1 { font-size: 2.8rem; }
+    .features { padding: 4rem 1.5rem; }
+    .features-grid { grid-template-columns: 1fr; }
+    .callout { margin: 0 1.5rem; grid-template-columns: 1fr; gap: 2rem; padding: 2.5rem; }
+    .callout-text { font-size: 1.5rem; }
+    .faq { padding: 4rem 1.5rem; }
+    .faq-grid { grid-template-columns: 1fr; gap: 2rem; }
+    footer { flex-direction: column; gap: 1rem; padding: 2rem 1.5rem; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="https://getspaops.com" class="nav-logo">Spa<span>Ops</span></a>
+  <span class="nav-badge">Med Spa Operations Platform</span>
+</nav>
+
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-eyebrow">Pricing</div>
+    <h1>Run your<br>med spa with<br><em>precision.</em></h1>
+    <p class="hero-sub">SpaOps is the complete operations platform built exclusively for med spas — from SOPs to staff management to client compliance, all in one place.</p>
+  </div>
+
+  <div class="pricing-card">
+    <div class="card-label">All-inclusive plan</div>
+    <div class="price-display">
+      <div class="price-amount">$2,500</div>
+      <div class="price-period">per month</div>
+    </div>
+    <div class="card-divider"></div>
+    <ul class="feature-list">
+      <li>AI-powered SOP Generator</li>
+      <li>Staff portal & digital sign-offs</li>
+      <li>Client login & records access</li>
+      <li>Compliance & audit trails</li>
+      <li>Dedicated onboarding support</li>
+      <li>Unlimited staff accounts</li>
+    </ul>
+    <a href="https://buy.stripe.com/test_9B69AMd4h82q2Ed2Yoawo01" class="cta-btn">Start Your Subscription</a>
+    <p class="card-note">Secure checkout via Stripe · Cancel anytime</p>
+  </div>
+</section>
+
+<section class="features">
+  <div class="section-header">
+    <h2>Everything included</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="features-grid">
+    <div class="feature-item">
+      <span class="feature-icon">📋</span>
+      <h3>SOP Generator</h3>
+      <p>AI-generated standard operating procedures tailored to your med spa's specific treatments and protocols. Stay compliant, consistent, and audit-ready without writing a single word from scratch.</p>
+    </div>
+    <div class="feature-item">
+      <span class="feature-icon">✍️</span>
+      <h3>Staff Portal & Sign-offs</h3>
+      <p>Your team gets a dedicated portal to access protocols, complete training, and digitally sign off on procedures. Every action is timestamped and logged — no more paper trails to manage.</p>
+    </div>
+    <div class="feature-item">
+      <span class="feature-icon">🔐</span>
+      <h3>Client Login</h3>
+      <p>Give clients a secure, branded portal to access their intake forms, consent documents, and treatment history. Professional, HIPAA-conscious, and completely hands-off for your front desk.</p>
+    </div>
+    <div class="feature-item">
+      <span class="feature-icon">📊</span>
+      <h3>Staff Sign-off Tracking</h3>
+      <p>Every staff sign-off is recorded with a timestamp and tied to the staff member's account. Know exactly who acknowledged what and when — no more chasing down paper signatures.</p>
+    </div>
+  </div>
+</section>
+
+<div class="callout">
+  <p class="callout-text">"The first operations platform built the way med spas actually run."</p>
+  <a href="https://buy.stripe.com/test_9B69AMd4h82q2Ed2Yoawo01" class="callout-cta">Get Started Today</a>
+</div>
+
+<section class="faq">
+  <div class="section-header">
+    <h2>Common questions</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="faq-grid">
+    <div class="faq-item">
+      <h4>How quickly can we get set up?</h4>
+      <p>Onboarding is guided and hands-on. We work directly with you to configure your SOPs, get your staff portal live, and make sure your team knows how to use the system before you go live.</p>
+    </div>
+    <div class="faq-item">
+      <h4>Is there a long-term contract?</h4>
+      <p>No. SpaOps is month-to-month. Cancel anytime with no penalties — we'd rather earn your business every month than lock you in.</p>
+    </div>
+    <div class="faq-item">
+      <h4>How many staff accounts are included?</h4>
+      <p>Unlimited. Add your entire team — injectors, aestheticians, front desk, medical directors — at no additional cost per seat.</p>
+    </div>
+    <div class="faq-item">
+      <h4>Who is SpaOps built for?</h4>
+      <p>SpaOps is built exclusively for med spas — not generic clinics or wellness centers. Every feature is designed around how med spas actually operate, from treatment SOPs to staff sign-offs to client records access.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">Spa<span>Ops</span></div>
+  <span class="footer-note">© 2026 SpaOps · getspaops.com</span>
+  <a href="mailto:corwin@getspaops.com">corwin@getspaops.com</a>
+</footer>
+
+</body>
+</html>
