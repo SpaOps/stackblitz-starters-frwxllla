@@ -16,10 +16,10 @@ export default function LoginPage() {
   }, [isSignedIn, router]);
 
   return (
-    <main style={{ minHeight: "100vh", display: "flex", fontFamily: "'Georgia', serif", position: "relative", overflow: "hidden" }}>
+    <main style={{ minHeight: "100vh", display: "flex", flexDirection: "column" as const, fontFamily: "'Georgia', serif", position: "relative", overflow: "hidden" }}>
       <div style={{ position: "fixed", inset: 0, zIndex: 0, background: "linear-gradient(135deg, #faf8f5 0%, #f2ede6 100%)" }} />
 
-      <aside style={{ position: "relative", zIndex: 1, width: 480, flexShrink: 0, background: "#2c2420", display: "flex", alignItems: "stretch" }}>
+     <aside style={{ position: "relative", zIndex: 1, width: "min(480px, 100%)", flexShrink: 0, background: "#2c2420", display: "flex", alignItems: "stretch" }}>
         <div style={{ padding: "56px 48px", display: "flex", flexDirection: "column", width: "100%" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 64 }}>
             <span style={{ fontSize: 22, fontWeight: 700, color: "#c4a886", letterSpacing: ".04em" }}>SpaOps</span>
