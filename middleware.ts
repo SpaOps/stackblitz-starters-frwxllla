@@ -5,6 +5,7 @@ const isProtectedRoute = createRouteMatcher([
   "/portal(.*)",
   "/dashboard(.*)",
   "/signoff/admin(.*)",
+  "/api/generate(.*)",
 ]);
 
 const isPublicRoute = createRouteMatcher([
@@ -22,6 +23,13 @@ export default clerkMiddleware(async (auth, req) => {
   const { userId, redirectToSignIn } = await auth();
 
   if (isProtectedRoute(req) && !userId) {
+    // For API routes return 401 instead of redirecting
+    if (req.nextUrl.pathname.startsWith("/api/")) {
+      return NextResponse.json(
+        { error: "Unauthorized. Please sign in." },
+        { status: 401 }
+      );
+    }
     return redirectToSignIn({ returnBackUrl: req.url });
   }
 
