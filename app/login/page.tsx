@@ -51,7 +51,7 @@ export default function LoginPage() {
           </a>
 
           <p style={{ fontFamily: "'Helvetica Neue', sans-serif", fontSize: 12, color: "#b5a49a" }}>
-            Not a client yet? <a href="/pricing" style={{ color: "#8b6f5e", textDecoration: "none" }}>See pricing →</a>
+            Not a client yet? <a href="/pricing.html" style={{ color: "#8b6f5e", textDecoration: "none" }}>See pricing.html →</a>
           </p>
         </div>
       </section>
