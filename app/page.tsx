@@ -10,7 +10,7 @@ const SAMPLE_SOPS = [
     sections: [
       { heading: "Pre-Appointment Preparation", steps: ["Confirm appointment 24 hours in advance via automated text", "Prepare new patient packet: intake forms, consent forms, HIPAA notice", "Review any prior medical history submitted via online portal", "Assign consultation room and notify provider of patient background"] },
       { heading: "Day-Of Arrival", steps: ["Greet patient by name within 30 seconds of entry", "Offer beverage (still water, sparkling water, or herbal tea)", "Guide patient to complete any remaining intake forms on iPad", "Capture before photos with patient consent — use standard lighting setup"] },
-      { heading: "Consultation Flow", steps: ["Provider reviews intake form prior to entering the room", "Conduct skin analysis using Visia Complexion Analysis System if applicable", "Present 2–3 treatment options with pricing — never lead with the most expensive", "Document all consultation notes in EMR within 2 hours"] },
+      { heading: "Consultation Flow", steps: ["Provider reviews intake form prior to entering the room", "Conduct skin analysis using Visia Complexion Analysis System if applicable", "Present 2-3 treatment options with pricing — never lead with the most expensive", "Document all consultation notes in EMR within 2 hours"] },
       { heading: "Post-Consultation", steps: ["Hand patient a printed treatment summary and pricing sheet", "Offer to schedule follow-up before they leave", "Send thank-you text within 4 hours of departure", "Log consultation outcome in CRM: booked, undecided, or lost"] }
     ]
   },
@@ -23,7 +23,7 @@ const SAMPLE_SOPS = [
       { heading: "Pre-Treatment Checklist", steps: ["Verify signed consent form on file", "Confirm no blood thinners or alcohol in last 48 hours", "Review contraindications: pregnancy, neuromuscular disorders, active infection", "Photograph treatment area and document in patient chart"] },
       { heading: "Room Setup", steps: ["Set treatment chair to 45-degree recline", "Lay out sterile field: needles, alcohol swabs, gauze, saline, Botox vials", "Reconstitute Botox per standard protocol", "Label vial with reconstitution date and time"] },
       { heading: "Treatment Execution", steps: ["Cleanse treatment area with alcohol swab; allow 30 seconds to dry", "Mark injection points with white eyeliner pencil", "Inject at correct depth and angle per anatomical training protocol", "Apply light pressure post-injection"] },
-      { heading: "Post-Treatment Instructions", steps: ["No lying down for 4 hours post-treatment", "Avoid strenuous exercise for 24 hours", "Results visible in 3–5 days, full effect at 14 days", "Schedule 2-week follow-up for touch-up assessment"] }
+      { heading: "Post-Treatment Instructions", steps: ["No lying down for 4 hours post-treatment", "Avoid strenuous exercise for 24 hours", "Results visible in 3-5 days, full effect at 14 days", "Schedule 2-week follow-up for touch-up assessment"] }
     ]
   },
   {
@@ -34,7 +34,7 @@ const SAMPLE_SOPS = [
     sections: [
       { heading: "Week 1 — Orientation", steps: ["Complete HR paperwork: I-9, W-4, direct deposit, emergency contact", "Issue uniform, key fob, and system logins", "Shadow front desk for 2 full days before independent shift", "Complete HIPAA training module and sign acknowledgment form"] },
       { heading: "Week 2 — Role Training", steps: ["Complete role-specific SOP readings and sign off on each", "Practice scripts: phone greeting, rebooking, upsell offers", "Observe 3 full patient journeys from check-in to checkout", "Complete product knowledge quiz with minimum 80% passing score"] },
-      { heading: "Week 3–4 — Supervised Practice", steps: ["Handle front desk independently with manager available on-site", "Complete first solo checkout and upsell attempt", "Receive mid-onboarding feedback session at day 14", "Set 30-60-90 day goals with direct supervisor"] },
+      { heading: "Week 3-4 — Supervised Practice", steps: ["Handle front desk independently with manager available on-site", "Complete first solo checkout and upsell attempt", "Receive mid-onboarding feedback session at day 14", "Set 30-60-90 day goals with direct supervisor"] },
       { heading: "30-Day Review", steps: ["Conduct formal performance review using standard rubric", "Review any patient feedback referencing staff member", "Confirm all SOPs have been signed off and filed in HR folder", "Celebrate wins publicly in team channel"] }
     ]
   },
@@ -93,20 +93,49 @@ function Nav({ right }: any) {
   );
 }
 
+// Upsell banner shown at the top of the portal after free SOP generation
+function UpsellBanner() {
+  return (
+    <div style={{ background: theme.dark, borderRadius: 4, padding: "28px 32px", marginBottom: 32, display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 20 }}>
+      <div>
+        <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 22, fontWeight: 300, color: theme.cream, marginBottom: 6 }}>
+          You just saw what SpaOps can do.
+        </div>
+        <p style={{ fontSize: 13, color: theme.goldLight, fontWeight: 300, maxWidth: 480, lineHeight: 1.6 }}>
+          Subscribe to unlock unlimited SOPs for every procedure, role, and workflow at your spa. Your team gets access. Your operations get consistent.
+        </p>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 10, alignItems: "flex-start" }}>
+        <a href="/pricing.html"
+          className="sb hl"
+          style={{ display: "inline-block", padding: "14px 28px", borderRadius: 2, fontFamily: "'DM Sans',sans-serif", fontSize: 13, fontWeight: 500, letterSpacing: "0.08em", textTransform: "uppercase", textDecoration: "none", color: theme.dark, whiteSpace: "nowrap" as const }}>
+          See Pricing — $2,500/mo
+        </a>
+        <a href="/login"
+          style={{ fontSize: 12, color: theme.muted, textDecoration: "none", letterSpacing: "0.05em", paddingLeft: 4 }}>
+          Already a client? Sign in →
+        </a>
+      </div>
+    </div>
+  );
+}
+
 function Landing({ onStart }: any) {
   return (
     <div style={{ minHeight: "100vh", background: theme.cream }}>
-      <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
- <a href="/login" style={{fontSize:13,color:"#1A1612",textDecoration:"none",fontFamily:"'DM Sans',sans-serif",fontWeight:500,padding:"10px 20px",border:"1.5px solid #E8E2D9",borderRadius:2,letterSpacing:"0.08em",textTransform:"uppercase" as const}}>Client Login</a>
-  <Btn onClick={onStart}>Get Your Operations Manual</Btn>
-</div>
+      <Nav right={
+        <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+          <a href="/login" style={{ fontSize: 13, color: "#1A1612", textDecoration: "none", fontFamily: "'DM Sans',sans-serif", fontWeight: 500, padding: "10px 20px", border: "1.5px solid #E8E2D9", borderRadius: 2, letterSpacing: "0.08em", textTransform: "uppercase" as const }}>Client Login</a>
+          <Btn onClick={onStart}>Get Your Operations Manual</Btn>
+        </div>
+      } />
       <section style={{ maxWidth: 900, margin: "0 auto", padding: "100px 48px 80px", textAlign: "center" }}>
         <div className="fu1" style={{ display: "inline-block", background: theme.goldLight, padding: "6px 16px", borderRadius: 2, fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 32, fontWeight: 500 }}>Built exclusively for med spas</div>
         <h1 className="fu2" style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(42px,7vw,76px)", fontWeight: 300, lineHeight: 1.1, marginBottom: 28 }}>
           Your entire med spa,<br /><em style={{ color: theme.gold }}>documented in minutes.</em>
         </h1>
         <p className="fu3" style={{ fontSize: 17, color: theme.muted, lineHeight: 1.7, maxWidth: 560, margin: "0 auto 48px", fontWeight: 300 }}>
-          SpaOps interviews your team and instantly builds a professional operations manual for every role, treatment, and workflow — so your staff always knows exactly what to do.
+          SpaOps interviews your team and instantly builds a professional operations manual for every role, treatment, and workflow so your staff always knows exactly what to do.
         </p>
         <div className="fu4" style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
           <Btn primary onClick={onStart}>Build My Operations Manual Free →</Btn>
@@ -125,7 +154,7 @@ function Landing({ onStart }: any) {
       <section style={{ maxWidth: 900, margin: "0 auto", padding: "80px 48px" }}>
         <h2 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 40, fontWeight: 300, textAlign: "center", marginBottom: 56 }}>Everything your team needs to <em style={{ color: theme.gold }}>run like clockwork</em></h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 28 }}>
-          {[["✦","Done-For-You Manuals","Answer 6 questions about your spa. We write complete professional procedures for every workflow immediately."],["◈","Role-Based Access","Staff see only their relevant procedures. Injectors see clinical protocols. Front desk sees patient experience flows."],["◇","Monthly Updates","As your spa evolves we update your procedures automatically. No outdated manuals gathering dust."],["◉","Branded Staff Portal","Your staff logs into a clean beautiful portal branded to your spa. Looks like you built it yourself."]].map(([ic,ti,de])=>(
+          {[["✦", "Done-For-You Manuals", "Answer 6 questions about your spa. We write complete professional procedures for every workflow immediately."], ["◈", "Role-Based Access", "Staff see only their relevant procedures. Injectors see clinical protocols. Front desk sees patient experience flows."], ["◇", "Monthly Updates", "As your spa evolves we update your procedures automatically. No outdated manuals gathering dust."], ["◉", "Branded Staff Portal", "Your staff logs into a clean beautiful portal branded to your spa. Looks like you built it yourself."]].map(([ic, ti, de]) => (
             <div key={ti as string} className="hl" style={{ background: theme.card, border: `1px solid ${theme.border}`, borderRadius: 4, padding: 32 }}>
               <div style={{ fontSize: 22, color: theme.gold, marginBottom: 14 }}>{ic}</div>
               <h3 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 20, fontWeight: 500, marginBottom: 10 }}>{ti}</h3>
@@ -142,7 +171,7 @@ function Landing({ onStart }: any) {
           <div style={{ position: "absolute", top: -14, left: "50%", transform: "translateX(-50%)", background: theme.gold, color: theme.dark, padding: "4px 20px", borderRadius: 2, fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 500 }}>Most Popular</div>
           <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 60, fontWeight: 300 }}>$2,500<span style={{ fontSize: 18, color: theme.muted }}>/mo</span></div>
           <p style={{ color: theme.muted, margin: "10px 0 32px", fontWeight: 300 }}>Everything your med spa needs to run on systems</p>
-          {["Unlimited done-for-you procedures","Branded staff portal","Monthly updates & maintenance","Role-based access for all staff","Dedicated onboarding call","Priority Slack support"].map(f=>(
+          {["Unlimited done-for-you procedures", "Branded staff portal", "Monthly updates & maintenance", "Role-based access for all staff", "Dedicated onboarding call", "Priority support"].map(f => (
             <div key={f} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12, textAlign: "left" }}>
               <span style={{ color: theme.sage }}>✓</span>
               <span style={{ fontSize: 14, fontWeight: 300 }}>{f}</span>
@@ -154,14 +183,14 @@ function Landing({ onStart }: any) {
 
       <footer style={{ borderTop: `1px solid ${theme.border}`, padding: "28px 48px", textAlign: "center" }}>
         <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 20, color: theme.gold, marginBottom: 6 }}>SpaOps</div>
-        <p style={{ fontSize: 12, color: theme.muted }}>© 2025 SpaOps — Built for med spas, by operators who get it.</p>
+        <p style={{ fontSize: 12, color: theme.muted }}>Less Binder. More Business.</p>
       </footer>
     </div>
   );
 }
 
 const QUESTIONS = [
-  { id: "spaName", label: "What is the name of your med spa?", placeholder: "e.g. Lumière Aesthetics" },
+  { id: "spaName", label: "What is the name of your med spa?", placeholder: "e.g. Lumiere Aesthetics" },
   { id: "sopTopic", label: "What procedure or workflow do you need documented first?", placeholder: "e.g. Botox treatment protocol, new patient intake..." },
   { id: "staffRoles", label: "What staff roles are involved?", placeholder: "e.g. Front desk, injecting NP, practice manager" },
   { id: "currentProcess", label: "How does this process work today?", placeholder: "e.g. Patient comes in, front desk checks them in..." },
@@ -184,15 +213,17 @@ function Intake({ onDone }: any) {
       });
       const sop = await res.json();
       if (sop.error) throw new Error(sop.error);
-      onDone({ ...sop, id: Date.now(), lastUpdated: new Date().toLocaleDateString("en-US",{month:"long",year:"numeric"}), icon: ({"Patient Experience":"✦","Clinical Operations":"◈","Staff Management":"◇","Sales & Revenue":"◉","Facility & Compliance":"◆"} as any)[sop.category]||"✦", spaName: answers.spaName });
-    } catch (e: any) { setError("Something went wrong. Please try again."); }
+      onDone({ ...sop, id: Date.now(), lastUpdated: new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" }), icon: ({"Patient Experience": "✦", "Clinical Operations": "◈", "Staff Management": "◇", "Sales & Revenue": "◉", "Facility & Compliance": "◆"} as any)[sop.category] || "✦", spaName: answers.spaName });
+    } catch (e: any) {
+      setError(e.message || "Something went wrong. Please try again.");
+    }
     finally { setLoading(false); }
   }
 
   if (loading) return (
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: theme.cream }}>
       <div style={{ width: 48, height: 48, border: `3px solid ${theme.goldLight}`, borderTopColor: theme.gold, borderRadius: "50%", animation: "spin 1s linear infinite", marginBottom: 24 }} />
-      <h2 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 28, fontWeight: 300 }}>Building your operations manual…</h2>
+      <h2 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 28, fontWeight: 300 }}>Building your operations manual...</h2>
       <p style={{ color: theme.muted, marginTop: 8, fontWeight: 300 }}>This takes about 15 seconds.</p>
     </div>
   );
@@ -226,7 +257,7 @@ function Intake({ onDone }: any) {
 function SOPDoc({ sop, onBack }: any) {
   return (
     <div>
-      <button onClick={onBack} style={{ background: "none", border: "none", color: theme.muted, cursor: "pointer", fontSize: 13, marginBottom: 28, padding: 0 }}>← Back to all procedures</button>
+      <button onClick={onBack} style={{ background: "none", border: "none", color: theme.muted, cursor: "pointer", fontSize: 13, marginBottom: 28, padding: 0 }}>Back to all procedures</button>
       <div style={{ background: theme.card, border: `1px solid ${theme.border}`, borderRadius: 4, overflow: "hidden" }}>
         <div style={{ background: theme.dark, padding: "36px 44px" }}>
           <div style={{ fontSize: 11, color: theme.goldLight, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 10 }}>{sop.category}</div>
@@ -268,26 +299,29 @@ function Portal({ generatedSop, spaName }: any) {
   const all = generatedSop ? [generatedSop, ...SAMPLE_SOPS] : SAMPLE_SOPS;
   const cats = ["All", ...Array.from(new Set(all.map((s: any) => s.category)))];
   const filtered = all.filter((s: any) => (cat === "All" || s.category === cat) && (s.title.toLowerCase().includes(search.toLowerCase()) || s.category.toLowerCase().includes(search.toLowerCase())));
-  const name = spaName || "Lumière Aesthetics";
+  const name = spaName || "Lumiere Aesthetics";
 
   return (
     <div style={{ minHeight: "100vh", background: theme.cream }}>
       <nav style={{ background: theme.dark, padding: "18px 32px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div><div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 18, color: theme.cream }}>{name}</div><div style={{ fontSize: 10, color: theme.muted, letterSpacing: "0.1em", textTransform: "uppercase" }}>Powered by SpaOps</div></div>
-        <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 16, color: theme.gold }}>Spa<span style={{ fontWeight: 600 }}>Ops</span></div>
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <a href="/login" style={{ fontSize: 12, color: theme.muted, textDecoration: "none", letterSpacing: "0.06em", textTransform: "uppercase" as const }}>Client Login</a>
+          <a href="/pricing.html" className="sb" style={{ display: "inline-block", padding: "8px 18px", borderRadius: 2, fontFamily: "'DM Sans',sans-serif", fontSize: 11, fontWeight: 500, letterSpacing: "0.08em", textTransform: "uppercase", textDecoration: "none", color: theme.dark }}>Subscribe</a>
+        </div>
       </nav>
       <div style={{ maxWidth: 1000, margin: "0 auto", padding: "44px 28px" }}>
         {active ? <SOPDoc sop={active} onBack={() => setActive(null)} /> : <>
-          {generatedSop && <div style={{ background: "#7A9E8722", border: `1px solid ${theme.sage}`, borderRadius: 4, padding: "14px 18px", marginBottom: 24, display: "flex", alignItems: "center", gap: 10 }}>
-            <span style={{ color: theme.sage }}>✓</span>
-            <div><div style={{ fontSize: 13, fontWeight: 500 }}>Your procedure was just created!</div><div style={{ fontSize: 12, color: theme.muted, fontWeight: 300 }}>"{generatedSop.title}" has been added to your portal.</div></div>
-          </div>}
+
+          {/* Upsell banner shown after free SOP generation */}
+          {generatedSop && <UpsellBanner />}
+
           <div style={{ marginBottom: 32 }}>
             <h1 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 32, fontWeight: 300, marginBottom: 4 }}>{name} <em style={{ color: theme.gold }}>Operations</em></h1>
             <p style={{ color: theme.muted, fontSize: 13, fontWeight: 300 }}>{all.length} standard operating procedures · Always up to date</p>
           </div>
           <div style={{ display: "flex", gap: 12, marginBottom: 28, flexWrap: "wrap", alignItems: "center" }}>
-            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search procedures…" style={{ flex: 1, minWidth: 180, padding: "10px 14px", border: `1.5px solid ${theme.border}`, borderRadius: 2, fontFamily: "'DM Sans',sans-serif", fontSize: 13, background: theme.card, outline: "none" }} />
+            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search procedures..." style={{ flex: 1, minWidth: 180, padding: "10px 14px", border: `1.5px solid ${theme.border}`, borderRadius: 2, fontFamily: "'DM Sans',sans-serif", fontSize: 13, background: theme.card, outline: "none" }} />
             <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
               {cats.map(c => <button key={c} onClick={() => setCat(c)} style={{ padding: "8px 14px", border: `1.5px solid ${cat === c ? theme.gold : theme.border}`, background: cat === c ? theme.gold : "transparent", color: cat === c ? theme.dark : theme.muted, borderRadius: 2, fontSize: 11, cursor: "pointer", fontFamily: "'DM Sans',sans-serif", fontWeight: cat === c ? 500 : 300 }}>{c}</button>)}
             </div>
@@ -304,6 +338,22 @@ function Portal({ generatedSop, spaName }: any) {
               </div>
             ))}
           </div>
+
+          {/* Bottom upsell CTA */}
+          {generatedSop && (
+            <div style={{ marginTop: 48, textAlign: "center", padding: "40px 32px", border: `1px solid ${theme.border}`, borderRadius: 4, background: theme.card }}>
+              <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 26, fontWeight: 300, marginBottom: 10 }}>
+                Ready to unlock all of this for your spa?
+              </div>
+              <p style={{ fontSize: 13, color: theme.muted, fontWeight: 300, marginBottom: 24, lineHeight: 1.6 }}>
+                Subscribe and get unlimited SOPs, staff sign-offs, and client access. Less binder. More business.
+              </p>
+              <a href="/pricing.html" className="sb hl"
+                style={{ display: "inline-block", padding: "16px 40px", borderRadius: 2, fontFamily: "'DM Sans',sans-serif", fontSize: 13, fontWeight: 500, letterSpacing: "0.08em", textTransform: "uppercase", textDecoration: "none", color: theme.dark }}>
+                See Pricing — $2,500/mo
+              </a>
+            </div>
+          )}
         </>}
       </div>
     </div>
