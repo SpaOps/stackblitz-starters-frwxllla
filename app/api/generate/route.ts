@@ -101,7 +101,13 @@ Respond ONLY with a valid JSON object in exactly this format with no other text:
       return NextResponse.json({ error: "No JSON in response" }, { status: 500 });
     }
 
-    const sop = JSON.parse(jsonMatch[0]);
+    // Clean common JSON issues before parsing
+    const cleaned = jsonMatch[0]
+      .replace(/,\s*]/g, "]")   // trailing commas in arrays
+      .replace(/,\s*}/g, "}")   // trailing commas in objects
+      .replace(/[\x00-\x1F\x7F]/g, " "); // control characters
+
+    const sop = JSON.parse(cleaned);
     return NextResponse.json(sop);
 
   } catch (err: any) {
