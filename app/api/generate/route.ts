@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
 
 // Recognized med spa procedure keywords — reject anything that doesn't match
 const MED_SPA_KEYWORDS = [
@@ -32,15 +31,6 @@ function isValidMedSpaTopic(topic: string): boolean {
 
 export async function POST(req: NextRequest) {
   try {
-    // Auth gate — must be signed in
-    const { userId } = await auth();
-    if (!userId) {
-      return NextResponse.json(
-        { error: "Unauthorized. Please sign in to generate SOPs." },
-        { status: 401 }
-      );
-    }
-
     const body = await req.json();
     const { spaName, sopTopic, staffRoles, currentProcess, painPoints, tools } = body;
 
