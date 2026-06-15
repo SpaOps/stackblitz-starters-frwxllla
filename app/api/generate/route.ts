@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { createAdminClient } from "@/lib/supabase";
 
-// Recognized med spa procedure keywords -- reject anything that doesn't match
 const MED_SPA_KEYWORDS = [
   "botox", "dysport", "xeomin", "jeuveau", "neurotoxin", "neuromodulator",
   "filler", "juvederm", "restylane", "sculptra", "radiesse", "belotero",
@@ -31,6 +30,59 @@ function isValidMedSpaTopic(topic: string): boolean {
   return MED_SPA_KEYWORDS.some(keyword => lower.includes(keyword));
 }
 
+function tryParseJSON(text: string): any | null {
+  // Find the JSON block
+  const jsonMatch = text.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) return null;
+
+  const raw = jsonMatch[0];
+
+  // First attempt: try parsing as-is
+  try {
+    return JSON.parse(raw);
+  } catch {}
+
+  // Second attempt: aggressive cleanup
+  try {
+    const cleaned = raw
+      .replace(/,\s*]/g, "]")
+      .replace(/,\s*}/g, "}")
+      .replace(/[\x00-\x1F\x7F]/g, " ")
+      .replace(/\\(?!["\\\/bfnrtu])/g, "\\\\")
+      .replace(/\}(\s*)\{/g, "},\n$1{")
+      .replace(/\](\s*)\{/g, "],\n$1{")
+      .replace(/"(\s*)"/g, '","');
+    return JSON.parse(cleaned);
+  } catch {}
+
+  return null;
+}
+
+async function callAnthropic(prompt: string): Promise<string> {
+  const response = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": process.env.ANTHROPIC_API_KEY!,
+      "anthropic-version": "2023-06-01"
+    },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-5",
+      max_tokens: 2000,
+      messages: [{ role: "user", content: prompt }]
+    })
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error("Anthropic API error:", errorText);
+    throw new Error("Anthropic API call failed");
+  }
+
+  const data = await response.json();
+  return data.content?.[0]?.text || "";
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -57,7 +109,15 @@ Staff Roles: ${staffRoles}
 Current Process: ${currentProcess}
 Pain Points: ${painPoints}
 Tools Used: ${tools}
-Respond ONLY with a valid JSON object in exactly this format with no other text:
+
+CRITICAL INSTRUCTIONS:
+- Respond ONLY with a valid JSON object, no other text before or after
+- Keep all strings under 200 characters each
+- Do not use any special characters, line breaks, or unescaped quotes inside strings
+- Use simple plain English, no formatting, no markdown
+- Maximum 5 sections, maximum 5 steps per section
+
+Use exactly this JSON structure:
 {
   "title": "string",
   "purpose": "string",
@@ -72,49 +132,32 @@ Respond ONLY with a valid JSON object in exactly this format with no other text:
   ]
 }`;
 
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": process.env.ANTHROPIC_API_KEY!,
-        "anthropic-version": "2023-06-01"
-      },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-5",
-        max_tokens: 2000,
-        messages: [{ role: "user", content: prompt }]
-      })
-    });
+    // First attempt
+    let text = await callAnthropic(prompt);
+    let sop = tryParseJSON(text);
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("Anthropic API error:", errorText);
-      return NextResponse.json({ error: errorText }, { status: 500 });
+    // Retry with stricter instructions if first parse failed
+    if (!sop) {
+      console.log("First parse failed, retrying with stricter prompt");
+      const retryPrompt = prompt + "\n\nYour previous response had invalid JSON. Return ONLY valid JSON, nothing else. Each string must be short and contain no special characters.";
+      text = await callAnthropic(retryPrompt);
+      sop = tryParseJSON(text);
     }
 
-    const data = await response.json();
-    const text = data.content?.[0]?.text || "";
-
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      console.error("No JSON found in response:", text);
-      return NextResponse.json({ error: "No JSON in response" }, { status: 500 });
+    if (!sop) {
+      console.error("JSON parsing failed after retry. Raw text:", text);
+      return NextResponse.json(
+        { error: "Sorry, we had trouble generating that SOP. Please try again with a simpler topic." },
+        { status: 500 }
+      );
     }
 
-    const cleaned = jsonMatch[0]
-      .replace(/,\s*]/g, "]")
-      .replace(/,\s*}/g, "}")
-      .replace(/[\x00-\x1F\x7F]/g, " ");
-
-    const sop = JSON.parse(cleaned);
-
-    // If user is logged in, save the SOP to Supabase
+    // Save to Supabase if user is logged in
     try {
       const { userId } = await auth();
       if (userId) {
         const supabase = createAdminClient();
 
-        // Find or create the client record
         let { data: client } = await supabase
           .from("clients")
           .select("id")
@@ -147,7 +190,6 @@ Respond ONLY with a valid JSON object in exactly this format with no other text:
         }
       }
     } catch (saveErr) {
-      // Don't fail the response if save fails -- just log it
       console.error("Failed to save SOP to Supabase:", saveErr);
     }
 
