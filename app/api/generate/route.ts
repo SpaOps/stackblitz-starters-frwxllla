@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
+import { createAdminClient } from "@/lib/supabase";
 
-// Recognized med spa procedure keywords — reject anything that doesn't match
+// Recognized med spa procedure keywords -- reject anything that doesn't match
 const MED_SPA_KEYWORDS = [
   "botox", "dysport", "xeomin", "jeuveau", "neurotoxin", "neuromodulator",
   "filler", "juvederm", "restylane", "sculptra", "radiesse", "belotero",
@@ -34,7 +36,6 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { spaName, sopTopic, staffRoles, currentProcess, painPoints, tools } = body;
 
-    // Validate required fields
     if (!spaName || !sopTopic) {
       return NextResponse.json(
         { error: "Spa name and SOP topic are required." },
@@ -42,7 +43,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Validate that the topic is a real med spa procedure or operation
     if (!isValidMedSpaTopic(sopTopic)) {
       return NextResponse.json(
         { error: "Please enter a valid med spa procedure or operational topic (e.g. Botox Consent Process, HydraFacial Protocol, Staff Onboarding)." },
@@ -101,13 +101,56 @@ Respond ONLY with a valid JSON object in exactly this format with no other text:
       return NextResponse.json({ error: "No JSON in response" }, { status: 500 });
     }
 
-    // Clean common JSON issues before parsing
     const cleaned = jsonMatch[0]
-      .replace(/,\s*]/g, "]")   // trailing commas in arrays
-      .replace(/,\s*}/g, "}")   // trailing commas in objects
-      .replace(/[\x00-\x1F\x7F]/g, " "); // control characters
+      .replace(/,\s*]/g, "]")
+      .replace(/,\s*}/g, "}")
+      .replace(/[\x00-\x1F\x7F]/g, " ");
 
     const sop = JSON.parse(cleaned);
+
+    // If user is logged in, save the SOP to Supabase
+    try {
+      const { userId } = await auth();
+      if (userId) {
+        const supabase = createAdminClient();
+
+        // Find or create the client record
+        let { data: client } = await supabase
+          .from("clients")
+          .select("id")
+          .eq("clerk_user_id", userId)
+          .single();
+
+        if (!client) {
+          const { data: newClient } = await supabase
+            .from("clients")
+            .insert({
+              clerk_user_id: userId,
+              email: "pending@unknown.com",
+              spa_name: spaName
+            })
+            .select("id")
+            .single();
+          client = newClient;
+        }
+
+        if (client) {
+          await supabase.from("sops").insert({
+            client_id: client.id,
+            title: sop.title,
+            category: sop.category,
+            purpose: sop.purpose,
+            scope: sop.scope,
+            owner: sop.owner,
+            sections: sop.sections
+          });
+        }
+      }
+    } catch (saveErr) {
+      // Don't fail the response if save fails -- just log it
+      console.error("Failed to save SOP to Supabase:", saveErr);
+    }
+
     return NextResponse.json(sop);
 
   } catch (err: any) {
