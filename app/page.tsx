@@ -145,7 +145,7 @@ function Landing({ onStart }: any) {
 
       <div style={{ background: theme.dark, padding: "40px 48px" }}>
         <div style={{ maxWidth: 900, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 32, textAlign: "center" }}>
-          {[["72%", "of med spa staff turnover is caused by unclear expectations"], ["8 hrs", "saved per week on training and re-training staff"], ["3 days", "average time to onboard a new hire with SpaOps"]].map(([s, l]) => (
+{[["Every role", "Front desk, injectors, and managers each get procedures written for their job"], ["One source", "Your team stops asking you and starts checking the portal"], ["Under 7 days", "From onboarding call to a live staff portal your team can use"]].map(([s, l]) => (
             <div key={s}><div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 44, fontWeight: 300, color: theme.gold, marginBottom: 8 }}>{s}</div><div style={{ fontSize: 13, color: theme.goldLight, lineHeight: 1.5, fontWeight: 300 }}>{l}</div></div>
           ))}
         </div>
