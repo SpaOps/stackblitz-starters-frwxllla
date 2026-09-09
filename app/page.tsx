@@ -181,9 +181,10 @@ function Landing({ onStart }: any) {
         </div>
       </section>
 
-      <footer style={{ borderTop: `1px solid ${theme.border}`, padding: "28px 48px", textAlign: "center" }}>
+     <footer style={{ borderTop: `1px solid ${theme.border}`, padding: "28px 48px", textAlign: "center" }}>
         <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 20, color: theme.gold, marginBottom: 6 }}>SpaOps</div>
-        <p style={{ fontSize: 12, color: theme.muted }}>Less Binder. More Business.</p>
+        <p style={{ fontSize: 12, color: theme.muted, marginBottom: 10 }}>Less Binder. More Business.</p>
+        <p style={{ fontSize: 11, color: theme.muted, maxWidth: 560, margin: "0 auto", lineHeight: 1.6, fontWeight: 300 }}>SpaOps produces operational documentation drafts. All clinical protocols must be reviewed and approved by your medical director or supervising physician before use. SpaOps does not provide medical, legal, or compliance advice.</p>
       </footer>
     </div>
   );
@@ -262,9 +263,12 @@ function SOPDoc({ sop, onBack }: any) {
         <div style={{ background: theme.dark, padding: "36px 44px" }}>
           <div style={{ fontSize: 11, color: theme.goldLight, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 10 }}>{sop.category}</div>
           <h1 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 30, fontWeight: 300, color: theme.cream, lineHeight: 1.2, marginBottom: 16 }}>{sop.title}</h1>
-          <div style={{ fontSize: 13, color: theme.muted }}>Owner: <span style={{ color: theme.goldLight }}>{sop.owner}</span> · Updated {sop.lastUpdated}</div>
+<div style={{ fontSize: 13, color: theme.muted }}>Owner: <span style={{ color: theme.goldLight }}>{sop.owner}</span> · Updated {sop.lastUpdated}</div>
         </div>
         <div style={{ padding: "36px 44px" }}>
+          <div style={{ background: theme.rose + "15", border: `1px solid ${theme.rose}44`, borderRadius: 4, padding: "14px 18px", marginBottom: 28 }}>
+            <p style={{ fontSize: 12, color: theme.dark, fontWeight: 500, lineHeight: 1.6 }}>DRAFT FOR REVIEW. This procedure was prepared from information you provided. Clinical content must be approved by your medical director before staff use.</p>
+          </div>
           {sop.purpose && <div style={{ background: theme.cream, border: `1px solid ${theme.border}`, borderRadius: 4, padding: 20, marginBottom: 32 }}>
             <div style={{ fontSize: 11, color: theme.gold, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 6, fontWeight: 500 }}>Purpose</div>
             <p style={{ fontSize: 14, lineHeight: 1.7, fontWeight: 300 }}>{sop.purpose}</p>
