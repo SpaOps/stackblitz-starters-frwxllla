@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { createAdminClient } from "@/lib/supabase";
 
+// Emails in this list bypass the one-free-SOP limit entirely.
+// Use this for your own testing and for live demos on discovery calls.
+const BYPASS_EMAILS = [
+  "corwin@getspaops.com",
+];
+
 const MED_SPA_KEYWORDS = [
   "botox", "dysport", "xeomin", "jeuveau", "neurotoxin", "neuromodulator",
   "filler", "juvederm", "restylane", "sculptra", "radiesse", "belotero",
@@ -30,19 +36,21 @@ function isValidMedSpaTopic(topic: string): boolean {
   return MED_SPA_KEYWORDS.some(keyword => lower.includes(keyword));
 }
 
+function isValidEmail(email: string): boolean {
+  if (!email || typeof email !== "string") return false;
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+}
+
 function tryParseJSON(text: string): any | null {
-  // Find the JSON block
   const jsonMatch = text.match(/\{[\s\S]*\}/);
   if (!jsonMatch) return null;
 
   const raw = jsonMatch[0];
 
-  // First attempt: try parsing as-is
   try {
     return JSON.parse(raw);
   } catch {}
 
-  // Second attempt: aggressive cleanup
   try {
     const cleaned = raw
       .replace(/,\s*]/g, "]")
@@ -86,7 +94,7 @@ async function callAnthropic(prompt: string): Promise<string> {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { spaName, sopTopic, staffRoles, currentProcess, painPoints, tools } = body;
+    const { spaName, sopTopic, staffRoles, currentProcess, painPoints, tools, email } = body;
 
     if (!spaName || !sopTopic) {
       return NextResponse.json(
@@ -100,6 +108,59 @@ export async function POST(req: NextRequest) {
         { error: "Please enter a valid med spa procedure or operational topic (e.g. Botox Consent Process, HydraFacial Protocol, Staff Onboarding)." },
         { status: 400 }
       );
+    }
+
+    // Check if this request is coming from a logged-in Clerk user first.
+    // Logged-in users are paying clients and are never subject to the free-demo cap.
+    const { userId } = await auth();
+
+    if (!userId) {
+      // Anonymous / free-demo path: enforce one SOP per email.
+      if (!isValidEmail(email)) {
+        return NextResponse.json(
+          { error: "Please enter a valid email address to generate your free procedure." },
+          { status: 400 }
+        );
+      }
+
+      const normalizedEmail = email.trim().toLowerCase();
+      const isBypassed = BYPASS_EMAILS.some(
+        (bypassEmail) => bypassEmail.toLowerCase() === normalizedEmail
+      );
+
+      if (!isBypassed) {
+        const supabase = createAdminClient();
+
+        const { data: existingLead } = await supabase
+          .from("leads")
+          .select("id")
+          .eq("email", normalizedEmail)
+          .maybeSingle();
+
+        if (existingLead) {
+          return NextResponse.json(
+            {
+              error: "limit_reached",
+              message: "You've already generated your free procedure. Book a 15-minute call and we'll build the rest of your operations manual with you live.",
+              calendlyUrl: "https://calendly.com/corwin-getspaops/30min"
+            },
+            { status: 403 }
+          );
+        }
+
+        // Record the lead before generating, so a request that fails partway
+        // through still counts (prevents retries from bypassing the limit).
+        const { error: insertError } = await supabase.from("leads").insert({
+          email: normalizedEmail,
+          spa_name: spaName,
+          sop_topic: sopTopic,
+        });
+
+        if (insertError) {
+          console.error("Failed to record lead:", insertError);
+          // Don't block generation on a logging failure, but log it for review.
+        }
+      }
     }
 
     const prompt = `You are an expert med spa operations consultant. Generate a comprehensive SOP based on this information:
@@ -132,11 +193,9 @@ Use exactly this JSON structure:
   ]
 }`;
 
-    // First attempt
     let text = await callAnthropic(prompt);
     let sop = tryParseJSON(text);
 
-    // Retry with stricter instructions if first parse failed
     if (!sop) {
       console.log("First parse failed, retrying with stricter prompt");
       const retryPrompt = prompt + "\n\nYour previous response had invalid JSON. Return ONLY valid JSON, nothing else. Each string must be short and contain no special characters.";
@@ -154,7 +213,6 @@ Use exactly this JSON structure:
 
     // Save to Supabase if user is logged in
     try {
-      const { userId } = await auth();
       if (userId) {
         const supabase = createAdminClient();
 
