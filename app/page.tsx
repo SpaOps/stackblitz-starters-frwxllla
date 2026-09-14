@@ -164,13 +164,12 @@ function Landing({ onStart }: any) {
         </div>
       </section>
 
-           <section id="portal" style={{ maxWidth: 940, margin: "0 auto", padding: "60px 48px 100px", textAlign: "center" }}>
+      <section id="portal" style={{ maxWidth: 940, margin: "0 auto", padding: "60px 48px 100px", textAlign: "center" }}>
         <h2 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 38, fontWeight: 300, marginBottom: 12 }}>Simple, transparent pricing</h2>
         <p style={{ color: theme.muted, marginBottom: 48, fontWeight: 300 }}>Two plans. Same system. The difference is how much of me you get.</p>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 24, alignItems: "start" }}>
 
-          {/* Pro */}
           <div style={{ background: theme.card, border: `2px solid ${theme.gold}`, borderRadius: 4, padding: "48px 36px 36px", position: "relative", textAlign: "left" }}>
             <div style={{ position: "absolute", top: -14, left: "50%", transform: "translateX(-50%)", background: theme.gold, color: theme.dark, padding: "4px 20px", borderRadius: 2, fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase" as const, fontWeight: 500, whiteSpace: "nowrap" as const }}>Most Popular</div>
             <div style={{ fontSize: 12, letterSpacing: "0.12em", textTransform: "uppercase" as const, color: theme.muted, marginBottom: 12 }}>Pro</div>
@@ -185,7 +184,6 @@ function Landing({ onStart }: any) {
             <div style={{ marginTop: 28 }}><Btn primary full onClick={onStart}>Build Your First SOP Free →</Btn></div>
           </div>
 
-          {/* Concierge */}
           <div style={{ background: theme.dark, border: `1px solid ${theme.dark}`, borderRadius: 4, padding: "48px 36px 36px", textAlign: "left" }}>
             <div style={{ fontSize: 12, letterSpacing: "0.12em", textTransform: "uppercase" as const, color: theme.goldLight, marginBottom: 12 }}>Concierge</div>
             <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 54, fontWeight: 300, lineHeight: 1, color: theme.cream }}>$2,500<span style={{ fontSize: 17, color: theme.muted }}>/mo</span></div>
@@ -205,14 +203,10 @@ function Landing({ onStart }: any) {
           30-day free trial on both plans. No contracts. Cancel anytime.
         </p>
       </section>
-          Build Your First SOP Free →
-        </div>
-      </section>
 
-     <footer style={{ borderTop: `1px solid ${theme.border}`, padding: "28px 48px", textAlign: "center" }}>
+      <footer style={{ borderTop: `1px solid ${theme.border}`, padding: "28px 48px", textAlign: "center" }}>
         <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 20, color: theme.gold, marginBottom: 6 }}>SpaOps</div>
-        <p style={{ fontSize: 12, color: theme.muted, marginBottom: 10 }}>Less Binder. More Business.</p>
-        <p style={{ fontSize: 11, color: theme.muted, maxWidth: 560, margin: "0 auto", lineHeight: 1.6, fontWeight: 300 }}>SpaOps produces operational documentation drafts. All clinical protocols must be reviewed and approved by your medical director or supervising physician before use. SpaOps does not provide medical, legal, or compliance advice.</p>
+        <p style={{ fontSize: 12, color: theme.muted }}>© 2026 SpaOps — Built for med spas, by operators who get it.</p>
       </footer>
     </div>
   );
