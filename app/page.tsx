@@ -164,19 +164,47 @@ function Landing({ onStart }: any) {
         </div>
       </section>
 
-      <section id="portal" style={{ maxWidth: 700, margin: "0 auto", padding: "60px 48px 100px", textAlign: "center" }}>
+           <section id="portal" style={{ maxWidth: 940, margin: "0 auto", padding: "60px 48px 100px", textAlign: "center" }}>
         <h2 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 38, fontWeight: 300, marginBottom: 12 }}>Simple, transparent pricing</h2>
-        <p style={{ color: theme.muted, marginBottom: 40, fontWeight: 300 }}>One monthly retainer. Everything included.</p>
-        <div style={{ background: theme.card, border: `2px solid ${theme.gold}`, borderRadius: 4, padding: 48, position: "relative" }}>
-          <div style={{ position: "absolute", top: -14, left: "50%", transform: "translateX(-50%)", background: theme.gold, color: theme.dark, padding: "4px 20px", borderRadius: 2, fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 500 }}>Most Popular</div>
-          <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 60, fontWeight: 300 }}>$2,500<span style={{ fontSize: 18, color: theme.muted }}>/mo</span></div>
-          <p style={{ color: theme.muted, margin: "10px 0 32px", fontWeight: 300 }}>Everything your med spa needs to run on systems</p>
-          {["Unlimited done-for-you procedures", "Branded staff portal", "Monthly updates & maintenance", "Role-based access for all staff", "Dedicated onboarding call", "Priority support"].map(f => (
-            <div key={f} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12, textAlign: "left" }}>
-              <span style={{ color: theme.sage }}>✓</span>
-              <span style={{ fontSize: 14, fontWeight: 300 }}>{f}</span>
-            </div>
-          ))}
+        <p style={{ color: theme.muted, marginBottom: 48, fontWeight: 300 }}>Two plans. Same system. The difference is how much of me you get.</p>
+
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 24, alignItems: "start" }}>
+
+          {/* Pro */}
+          <div style={{ background: theme.card, border: `2px solid ${theme.gold}`, borderRadius: 4, padding: "48px 36px 36px", position: "relative", textAlign: "left" }}>
+            <div style={{ position: "absolute", top: -14, left: "50%", transform: "translateX(-50%)", background: theme.gold, color: theme.dark, padding: "4px 20px", borderRadius: 2, fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase" as const, fontWeight: 500, whiteSpace: "nowrap" as const }}>Most Popular</div>
+            <div style={{ fontSize: 12, letterSpacing: "0.12em", textTransform: "uppercase" as const, color: theme.muted, marginBottom: 12 }}>Pro</div>
+            <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 54, fontWeight: 300, lineHeight: 1 }}>$1,499<span style={{ fontSize: 17, color: theme.muted }}>/mo</span></div>
+            <p style={{ color: theme.muted, margin: "12px 0 28px", fontWeight: 300, fontSize: 14, lineHeight: 1.6 }}>For the spa that has outgrown tribal knowledge.</p>
+            {["Unlimited done-for-you procedures","Branded staff portal","Staff sign-off tracking","Role-based access for all staff","Unlimited monthly revisions","Quarterly workflow interviews","Guided onboarding call","Priority email support","Multi-location available as add-on"].map(f=>(
+              <div key={f} style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: 11 }}>
+                <span style={{ color: theme.sage, flexShrink: 0 }}>✓</span>
+                <span style={{ fontSize: 14, fontWeight: 300, lineHeight: 1.5 }}>{f}</span>
+              </div>
+            ))}
+            <div style={{ marginTop: 28 }}><Btn primary full onClick={onStart}>Build Your First SOP Free →</Btn></div>
+          </div>
+
+          {/* Concierge */}
+          <div style={{ background: theme.dark, border: `1px solid ${theme.dark}`, borderRadius: 4, padding: "48px 36px 36px", textAlign: "left" }}>
+            <div style={{ fontSize: 12, letterSpacing: "0.12em", textTransform: "uppercase" as const, color: theme.goldLight, marginBottom: 12 }}>Concierge</div>
+            <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 54, fontWeight: 300, lineHeight: 1, color: theme.cream }}>$2,500<span style={{ fontSize: 17, color: theme.muted }}>/mo</span></div>
+            <p style={{ color: theme.goldLight, margin: "12px 0 28px", fontWeight: 300, fontSize: 14, lineHeight: 1.6, opacity: 0.75 }}>For multi-location practices that want it handled.</p>
+            {["Everything in Pro, plus:","Monthly workflow interviews","White-glove onboarding","On-site onboarding available","Multi-location included","Direct line support"].map((f,i)=>(
+              <div key={f} style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: 11 }}>
+                <span style={{ color: i === 0 ? "transparent" : theme.gold, flexShrink: 0 }}>✓</span>
+                <span style={{ fontSize: 14, fontWeight: i === 0 ? 400 : 300, lineHeight: 1.5, color: i === 0 ? theme.gold : theme.cream }}>{f}</span>
+              </div>
+            ))}
+            <div style={{ marginTop: 28 }}><Btn full onClick={onStart}>Build Your First SOP Free →</Btn></div>
+          </div>
+
+        </div>
+
+        <p style={{ color: theme.muted, marginTop: 32, fontWeight: 300, fontSize: 13 }}>
+          30-day free trial on both plans. No contracts. Cancel anytime.
+        </p>
+      </section>
           Build Your First SOP Free →
         </div>
       </section>
