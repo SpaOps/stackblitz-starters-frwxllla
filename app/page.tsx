@@ -138,7 +138,7 @@ function Landing({ onStart }: any) {
           SpaOps interviews your team and instantly builds a professional operations manual for every role, treatment, and workflow so your staff always knows exactly what to do.
         </p>
         <div className="fu4" style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
-          <Btn primary onClick={onStart}>Build My Operations Manual Free →</Btn>
+         Build Your First SOP Free →
           <Btn onClick={() => document.getElementById("portal")?.scrollIntoView({ behavior: "smooth" })}>See How It Works</Btn>
         </div>
       </section>
@@ -177,7 +177,7 @@ function Landing({ onStart }: any) {
               <span style={{ fontSize: 14, fontWeight: 300 }}>{f}</span>
             </div>
           ))}
-          <div style={{ marginTop: 28 }}><Btn primary full onClick={onStart}>Build My Operations Manual Free →</Btn></div>
+          Build Your First SOP Free →
         </div>
       </section>
 
