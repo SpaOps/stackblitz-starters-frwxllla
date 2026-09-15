@@ -394,17 +394,7 @@ function Portal({ generatedSop, spaName }: any) {
           </div>
 
           {/* Bottom upsell CTA */}
-          {generatedSop && (
-            <div style={{ marginTop: 48, textAlign: "center", padding: "40px 32px", border: `1px solid ${theme.border}`, borderRadius: 4, background: theme.card }}>
-              <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 26, fontWeight: 300, marginBottom: 10 }}>
-                Ready to unlock all of this for your spa?
-              </div>
-
-          {generatedSop && (
-            <div style={{ marginTop: 48, textAlign: "center", padding: "40px 32px", border: `1px solid ${theme.border}`, borderRadius: 4, background: theme.card }}>
-              <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 26, fontWeight: 300, marginBottom: 10 }}>
-                Ready to unlock all of this for your spa?
-              </div>
+   
               <p style={{ fontSize: 13, color: theme.muted, fontWeight: 300, marginBottom: 24, lineHeight: 1.6 }}>
                 Subscribe and get unlimited SOPs, staff sign-offs, and client access. Less binder. More business.
               </p>
