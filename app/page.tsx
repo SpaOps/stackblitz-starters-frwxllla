@@ -402,16 +402,9 @@ function Portal({ generatedSop, spaName }: any) {
               <p style={{ fontSize: 13, color: theme.muted, fontWeight: 300, marginBottom: 24, lineHeight: 1.6 }}>
                 Subscribe and get unlimited SOPs, staff sign-offs, and client access. Less binder. More business.
               </p>
-              <a href="/pricing.html" className="sb hl"
+                        <a href="mailto:corwin@getspaops.com?subject=Build%20my%20SpaOps%20library" className="sb hl"
                 style={{ display: "inline-block", padding: "16px 40px", borderRadius: 2, fontFamily: "'DM Sans',sans-serif", fontSize: 13, fontWeight: 500, letterSpacing: "0.08em", textTransform: "uppercase", textDecoration: "none", color: theme.dark }}>
-                See Pricing — $2,500/mo
-              </a>
-            </div>
-          )}
-        </>}
-      </div>
-    </div>
-  );
+                Get My Full Library Built →
 }
 
 export default function App() {
