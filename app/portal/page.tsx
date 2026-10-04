@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic';
 
 import { useUser, UserButton } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
+
 
 type SOP = {
   id: string;
