@@ -1,20 +1,35 @@
-  // Load SOPs through the server (verifies Clerk login, scopes to this client)
-  useEffect(() => {
-    if (!isLoaded || !user) return;
+import { NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
+import { createAdminClient } from "@/lib/supabase";
 
-    async function loadSops() {
-      setLoading(true);
-      try {
-        const res = await fetch("/api/sops");
-        if (!res.ok) throw new Error("Failed to load SOPs");
-        const json = await res.json();
-        setSops(json.sops || []);
-      } catch (err) {
-        console.error("Load error:", err);
-      } finally {
-        setLoading(false);
-      }
-    }
+export const dynamic = "force-dynamic";
 
-    loadSops();
-  }, [user, isLoaded]);
+export async function GET() {
+  const { userId } = await auth();
+  if (!userId) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const supabase = createAdminClient();
+
+  const { data: client } = await supabase
+    .from("clients")
+    .select("id")
+    .eq("clerk_user_id", userId)
+    .maybeSingle();
+
+  if (!client) return NextResponse.json({ sops: [] });
+
+  const { data, error } = await supabase
+    .from("sops")
+    .select("*")
+    .eq("client_id", client.id)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Failed to load SOPs:", error);
+    return NextResponse.json({ error: "Failed to load SOPs" }, { status: 500 });
+  }
+
+  return NextResponse.json({ sops: data ?? [] });
+}
