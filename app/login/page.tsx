@@ -46,7 +46,7 @@ export default function LoginPage() {
             <p style={{ fontFamily: "'Helvetica Neue', sans-serif", fontSize: 13, color: "#8b7b74", lineHeight: 1.6 }}>Sign in with Google or your email — no password needed.</p>
           </div>
 
-          <a href="https://accounts.getspaops.com/sign-in" style={{ display: "block", width: "100%", padding: "16px", background: "#8b6f5e", color: "#faf8f5", borderRadius: 2, fontFamily: "'Helvetica Neue', sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: ".08em", textTransform: "uppercase" as const, textDecoration: "none", textAlign: "center" as const }}>
+          <a  href="https://accounts.getspaops.com/sign-in?redirect_url=https%3A%2F%2Fgetspaops.com%2Fportal" style={{ display: "block", width: "100%", padding: "16px", background: "#8b6f5e", color: "#faf8f5", borderRadius: 2, fontFamily: "'Helvetica Neue', sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: ".08em", textTransform: "uppercase" as const, textDecoration: "none", textAlign: "center" as const }}>
             Sign In →
           </a>
 
