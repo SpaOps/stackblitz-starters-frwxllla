@@ -36,38 +36,17 @@ export default function PortalPage() {
   const [copied, setCopied] = useState<string | null>(null);
   const [activeSop, setActiveSop] = useState<SOP | null>(null);
 
-  // Load SOPs from Supabase
+  // Load SOPs through the server (verifies Clerk login, scopes to this client)
   useEffect(() => {
     if (!isLoaded || !user) return;
 
     async function loadSops() {
       setLoading(true);
       try {
-        // First get the client record
-        const { data: client } = await supabase
-          .from("clients")
-          .select("id")
-          .eq("clerk_user_id", user!.id)
-          .single();
-
-        if (!client) {
-          setSops([]);
-          setLoading(false);
-          return;
-        }
-
-        // Then fetch all their SOPs
-        const { data: sopsData, error } = await supabase
-          .from("sops")
-          .select("*")
-          .eq("client_id", client.id)
-          .order("created_at", { ascending: false });
-
-        if (error) {
-          console.error("Error loading SOPs:", error);
-        }
-
-        setSops(sopsData || []);
+        const res = await fetch("/api/sops");
+        if (!res.ok) throw new Error("Failed to load SOPs");
+        const json = await res.json();
+        setSops(json.sops || []);
       } catch (err) {
         console.error("Load error:", err);
       } finally {
