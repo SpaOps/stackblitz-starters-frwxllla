@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useUser } from "@clerk/nextjs";
 
 const SAMPLE_SOPS = [
   {
@@ -224,11 +225,12 @@ const QUESTIONS = [
 function Intake({ onDone }: any) {
   const [answers, setAnswers] = useState<any>({});
   const [email, setEmail] = useState("");
+  const { isSignedIn } = useUser();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [limitReached, setLimitReached] = useState<{ message: string; calendlyUrl: string } | null>(null);
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
-  const filled = emailValid && QUESTIONS.every(q => (answers[q.id] || "").trim());
+  const filled = (isSignedIn || emailValid) && QUESTIONS.every(q => (answers[q.id] || "").trim());
 
   async function generate() {
     setLoading(true); setError(""); setLimitReached(null);
@@ -283,12 +285,14 @@ function Intake({ onDone }: any) {
           <p style={{ color: theme.muted, fontSize: 15, fontWeight: 300, lineHeight: 1.6 }}>Answer these questions and we'll build a complete professional operations procedure in under 30 seconds.</p>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+          {!isSignedIn && (
           <div>
             <label style={{ display: "block", fontSize: 13, fontWeight: 500, marginBottom: 8 }}>Your email address</label>
             <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@yourspa.com"
               style={{ width: "100%", padding: "12px 14px", border: `1.5px solid ${email && !emailValid ? theme.rose : email ? theme.gold : theme.border}`, borderRadius: 2, fontFamily: "'DM Sans',sans-serif", fontSize: 14, background: theme.card, outline: "none", fontWeight: 300 }} />
             <p style={{ fontSize: 11, color: theme.muted, marginTop: 6, fontWeight: 300 }}>One free procedure per email. We'll send your result here too.</p>
           </div>
+          )}
           {QUESTIONS.map((q, i) => (
             <div key={q.id}>
               <label style={{ display: "block", fontSize: 13, fontWeight: 500, marginBottom: 8 }}>{i + 1}. {q.label}</label>

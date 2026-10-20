@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { createAdminClient } from "@/lib/supabase";
 
 // Emails in this list bypass the one-free-SOP limit entirely.
@@ -212,46 +212,62 @@ Use exactly this JSON structure:
     }
 
     // Save to Supabase if user is logged in
-    try {
-      if (userId) {
+    let saved = false;
+    if (userId) {
+      try {
         const supabase = createAdminClient();
 
-        let { data: client } = await supabase
+        // Real email from the Clerk account
+        const user = await currentUser();
+        const userEmail =
+          user?.primaryEmailAddress?.emailAddress ??
+          user?.emailAddresses?.[0]?.emailAddress ??
+          "pending@unknown.com";
+
+        // Find this user's client record (tolerates accidental duplicate rows)
+        const { data: existing } = await supabase
           .from("clients")
-          .select("id")
+          .select("id, email")
           .eq("clerk_user_id", userId)
-          .single();
+          .order("created_at", { ascending: true })
+          .limit(1);
+
+        let client = existing?.[0] ?? null;
 
         if (!client) {
-          const { data: newClient } = await supabase
+          const { data: newClient, error: clientError } = await supabase
             .from("clients")
-            .insert({
-              clerk_user_id: userId,
-              email: "pending@unknown.com",
-              spa_name: spaName
-            })
-            .select("id")
+            .insert({ clerk_user_id: userId, email: userEmail, spa_name: spaName })
+            .select("id, email")
             .single();
+          if (clientError) console.error("Failed to create client:", clientError);
           client = newClient;
+        } else if (client.email === "pending@unknown.com" && userEmail !== "pending@unknown.com") {
+          await supabase.from("clients").update({ email: userEmail }).eq("id", client.id);
         }
 
         if (client) {
-          await supabase.from("sops").insert({
+          const { error: sopError } = await supabase.from("sops").insert({
             client_id: client.id,
             title: sop.title,
             category: sop.category,
             purpose: sop.purpose,
             scope: sop.scope,
             owner: sop.owner,
-            sections: sop.sections
+            sections: sop.sections,
           });
+          if (sopError) {
+            console.error("Failed to save SOP:", sopError);
+          } else {
+            saved = true;
+          }
         }
+      } catch (saveErr) {
+        console.error("Failed to save SOP to Supabase:", saveErr);
       }
-    } catch (saveErr) {
-      console.error("Failed to save SOP to Supabase:", saveErr);
     }
 
-    return NextResponse.json(sop);
+    return NextResponse.json(userId ? { ...sop, saved } : sop);
 
   } catch (err: any) {
     console.error("Route error:", err);
