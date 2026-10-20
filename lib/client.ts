@@ -1,3 +1,4 @@
+import { clerkClient } from "@clerk/nextjs/server";
 import { createAdminClient } from "@/lib/supabase";
 
 type Supa = ReturnType<typeof createAdminClient>;
@@ -55,4 +56,27 @@ export async function findClient(
     .limit(1);
 
   return data?.[0] ?? null;
+}
+
+// Works out which organization a request is for. Uses the session's active
+// organization when present. Otherwise it asks Clerk for the user's real
+// memberships, so a request can never claim an organization the user is not in:
+// the organization the portal says is selected (if the user belongs to it),
+// else the user's only organization.
+export async function resolveOrgId(
+  userId: string,
+  sessionOrgId?: string | null,
+  requestedOrgId?: string | null
+): Promise<string | null> {
+  if (sessionOrgId) return sessionOrgId;
+  try {
+    const memberships = await clerkClient.users.getOrganizationMembershipList({ userId });
+    const ids = memberships.data.map((m) => m.organization.id);
+    if (requestedOrgId && ids.includes(requestedOrgId)) return requestedOrgId;
+    if (ids.length === 1) return ids[0];
+    return null;
+  } catch (err) {
+    console.error("Failed to load organization memberships:", err);
+    return null;
+  }
 }

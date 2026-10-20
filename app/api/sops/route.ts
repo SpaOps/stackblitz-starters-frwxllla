@@ -1,20 +1,20 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { createAdminClient } from "@/lib/supabase";
-import { findClient } from "@/lib/client";
+import { findClient, resolveOrgId } from "@/lib/client";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(req: Request) {
   const { userId, orgId } = await auth();
-  console.log("DEBUG sops auth", { userId, orgId });
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const supabase = createAdminClient();
 
-  const client = await findClient(supabase, userId, orgId);
+  const resolvedOrgId = await resolveOrgId(userId, orgId, req.headers.get("x-org-id"));
+  const client = await findClient(supabase, userId, resolvedOrgId);
 
   if (!client) return NextResponse.json({ sops: [], signoffs: [] });
 

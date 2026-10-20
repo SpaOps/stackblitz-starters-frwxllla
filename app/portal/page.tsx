@@ -57,7 +57,7 @@ export default function PortalPage() {
     async function loadSops() {
       setLoading(true);
       try {
-        const res = await fetch("/api/sops");
+        const res = await fetch("/api/sops", { headers: organization?.id ? { "x-org-id": organization.id } : {} });
         if (!res.ok) throw new Error("Failed to load SOPs");
         const json = await res.json();
         setSops(json.sops || []);

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { createAdminClient } from "@/lib/supabase";
-import { findClient } from "@/lib/client";
+import { findClient, resolveOrgId } from "@/lib/client";
 
 // Emails in this list bypass the one-free-SOP limit entirely.
 // Use this for your own testing and for live demos on discovery calls.
@@ -226,12 +226,13 @@ Use exactly this JSON structure:
           "pending@unknown.com";
 
         // Find the spa's client record (shared by everyone in the same organization)
-        let client = await findClient(supabase, userId, orgId);
+        const resolvedOrgId = await resolveOrgId(userId, orgId, req.headers.get("x-org-id"));
+        let client = await findClient(supabase, userId, resolvedOrgId);
 
         if (!client) {
           const { data: newClient, error: clientError } = await supabase
             .from("clients")
-            .insert({ clerk_user_id: userId, clerk_org_id: orgId ?? null, email: userEmail, spa_name: spaName })
+            .insert({ clerk_user_id: userId, clerk_org_id: resolvedOrgId, email: userEmail, spa_name: spaName })
             .select("id, email")
             .single();
           if (clientError) console.error("Failed to create client:", clientError);
