@@ -7,6 +7,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   const { userId, orgId } = await auth();
+  console.log("DEBUG sops auth", { userId, orgId });
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
