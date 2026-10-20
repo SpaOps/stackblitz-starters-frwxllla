@@ -80,6 +80,10 @@ export async function POST(
     signed_at: new Date().toISOString(),
   });
 
+  if (error?.code === "23505") {
+    return NextResponse.json({ ok: true, alreadySigned: true });
+  }
+
   if (error) {
     console.error("Failed to save sign-off:", error);
     return NextResponse.json({ error: "Could not save your sign-off. Please try again." }, { status: 500 });

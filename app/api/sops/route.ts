@@ -18,7 +18,7 @@ export async function GET() {
     .eq("clerk_user_id", userId)
     .maybeSingle();
 
-  if (!client) return NextResponse.json({ sops: [] });
+  if (!client) return NextResponse.json({ sops: [], signoffs: [] });
 
   const { data, error } = await supabase
     .from("sops")
@@ -31,5 +31,22 @@ export async function GET() {
     return NextResponse.json({ error: "Failed to load SOPs" }, { status: 500 });
   }
 
-  return NextResponse.json({ sops: data ?? [] });
+  const sops = data ?? [];
+  let signoffs: any[] = [];
+
+  if (sops.length > 0) {
+    const { data: signoffRows, error: signoffError } = await supabase
+      .from("signoffs")
+      .select("id, sop_id, staff_name, staff_email, signed_at")
+      .eq("client_id", client.id)
+      .order("signed_at", { ascending: false });
+
+    if (signoffError) {
+      console.error("Failed to load sign-offs:", signoffError);
+    } else {
+      signoffs = signoffRows ?? [];
+    }
+  }
+
+  return NextResponse.json({ sops, signoffs });
 }

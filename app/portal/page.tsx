@@ -16,6 +16,14 @@ type SOP = {
   created_at: string;
 };
 
+type Signoff = {
+  id: string;
+  sop_id: string;
+  staff_name: string;
+  staff_email: string | null;
+  signed_at: string;
+};
+
 function getTimeOfDay() {
   const h = new Date().getHours();
   if (h < 12) return "morning";
@@ -27,9 +35,14 @@ function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("en-US", { month: "short", year: "numeric" });
 }
 
+function formatDateTime(iso: string) {
+  return new Date(iso).toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" });
+}
+
 export default function PortalPage() {
   const { user, isLoaded } = useUser();
   const [sops, setSops] = useState<SOP[]>([]);
+  const [signoffs, setSignoffs] = useState<Signoff[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
@@ -47,6 +60,7 @@ export default function PortalPage() {
         if (!res.ok) throw new Error("Failed to load SOPs");
         const json = await res.json();
         setSops(json.sops || []);
+        setSignoffs(json.signoffs || []);
       } catch (err) {
         console.error("Load error:", err);
       } finally {
@@ -56,6 +70,9 @@ export default function PortalPage() {
 
     loadSops();
   }, [user, isLoaded]);
+
+  const signoffCounts: Record<string, number> = {};
+  signoffs.forEach(s => { signoffCounts[s.sop_id] = (signoffCounts[s.sop_id] || 0) + 1; });
 
   const categories = ["All", ...Array.from(new Set(sops.map(s => s.category).filter(Boolean) as string[]))];
 
@@ -89,7 +106,7 @@ export default function PortalPage() {
 
       <div className="page">
         {activeSop ? (
-          <SOPDetail sop={activeSop} onBack={() => setActiveSop(null)} />
+          <SOPDetail sop={activeSop} signoffs={signoffs.filter(s => s.sop_id === activeSop.id)} onBack={() => setActiveSop(null)} />
         ) : (
           <>
             <div className="welcome-row">
@@ -142,6 +159,9 @@ export default function PortalPage() {
                       </div>
                       <h3 className="card-title">{sop.title}</h3>
                       <p className="card-updated">Created {formatDate(sop.created_at)}</p>
+                      <p className={`card-signed ${signoffCounts[sop.id] ? "has" : ""}`}>
+                        {signoffCounts[sop.id] ? `${signoffCounts[sop.id]} staff sign-off${signoffCounts[sop.id] === 1 ? "" : "s"}` : "No sign-offs yet"}
+                      </p>
                       <div className="card-actions">
                         <button className="card-btn primary" onClick={(e) => { e.stopPropagation(); setActiveSop(sop); }}>
                           View SOP
@@ -202,6 +222,8 @@ export default function PortalPage() {
         .card-cat { font-family: 'Helvetica Neue', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #8b6f5e; background: rgba(139,111,94,.08); padding: 3px 8px; border-radius: 20px; }
         .card-title { font-size: 16px; font-weight: 400; line-height: 1.4; color: #2c2420; flex: 1; }
         .card-updated { font-family: 'Helvetica Neue', sans-serif; font-size: 11px; color: #c4b8b2; }
+        .card-signed { font-family: 'Helvetica Neue', sans-serif; font-size: 12px; color: #b5a49a; }
+        .card-signed.has { color: #4f8a67; font-weight: 600; }
         .card-actions { display: flex; gap: 8px; margin-top: 4px; }
         .card-btn { flex: 1; padding: 10px; font-family: 'Helvetica Neue', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; border-radius: 2px; cursor: pointer; text-decoration: none; text-align: center; transition: all .2s; border: none; }
         .card-btn.primary { background: #8b6f5e; color: #faf8f5; }
@@ -220,7 +242,14 @@ export default function PortalPage() {
   );
 }
 
-function SOPDetail({ sop, onBack }: { sop: SOP; onBack: () => void }) {
+function SOPDetail({ sop, signoffs, onBack }: { sop: SOP; signoffs: Signoff[]; onBack: () => void }) {
+  const [copied, setCopied] = useState(false);
+  const copyLink = () => {
+    navigator.clipboard.writeText(`${window.location.origin}/signoff/${sop.id}`);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
     <div className="detail-wrap">
       <button onClick={onBack} className="back-btn">← Back to library</button>
@@ -231,6 +260,33 @@ function SOPDetail({ sop, onBack }: { sop: SOP; onBack: () => void }) {
           {sop.owner && <div className="detail-owner">Owner: <span>{sop.owner}</span></div>}
         </div>
         <div className="detail-body">
+          <div className="so-block">
+            <div className="so-head">
+              <div>
+                <div className="detail-label">Staff sign-offs</div>
+                <div className="so-count">{signoffs.length === 0 ? "No one has signed off yet" : `${signoffs.length} signed`}</div>
+              </div>
+              <button className="so-copy" onClick={copyLink}>{copied ? "✓ Link copied" : "Copy sign-off link"}</button>
+            </div>
+            {signoffs.length > 0 && (
+              <div className="so-scroll">
+                <table className="so-table">
+                  <thead>
+                    <tr><th>Name</th><th>Email</th><th>Signed</th></tr>
+                  </thead>
+                  <tbody>
+                    {signoffs.map(s => (
+                      <tr key={s.id}>
+                        <td>{s.staff_name}</td>
+                        <td>{s.staff_email}</td>
+                        <td>{formatDateTime(s.signed_at)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
           {sop.purpose && (
             <div className="detail-purpose">
               <div className="detail-label">Purpose</div>
@@ -279,6 +335,15 @@ function SOPDetail({ sop, onBack }: { sop: SOP; onBack: () => void }) {
         .step-row { display: flex; gap: 12px; margin-bottom: 12px; align-items: flex-start; }
         .step-num { min-width: 22px; height: 22px; border: 1.5px solid #e8d5b0; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #c4a886; font-weight: 500; flex-shrink: 0; margin-top: 2px; }
         .step-row p { font-size: 14px; line-height: 1.7; }
+        .so-block { border: 1px solid #e8e0d4; border-radius: 4px; padding: 20px; margin-bottom: 32px; }
+        .so-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .so-count { font-family: 'Georgia', serif; font-size: 20px; color: #2c2420; }
+        .so-copy { padding: 10px 16px; background: transparent; border: 1px solid #e8e0d4; border-radius: 2px; color: #8b7b74; font-family: inherit; font-size: 11px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; cursor: pointer; }
+        .so-copy:hover { border-color: #8b6f5e; color: #8b6f5e; }
+        .so-scroll { overflow-x: auto; margin-top: 16px; }
+        .so-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .so-table th { text-align: left; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: #8b6f5e; padding: 8px 12px 8px 0; border-bottom: 1px solid #e8e0d4; }
+        .so-table td { padding: 10px 12px 10px 0; border-bottom: 1px solid #f1ebe2; color: #2c2420; white-space: nowrap; }
       `}</style>
     </div>
   );
