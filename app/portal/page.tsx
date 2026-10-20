@@ -82,7 +82,7 @@ export default function PortalPage() {
           <span className="hdr-spa">{user?.firstName || "Your Spa"}</span>
         </div>
         <div className="hdr-right">
-          <a href="/" className="hdr-link">Generate New SOP</a>
+          <a href="/?new=1" className="hdr-link">Generate New SOP</a>
           <UserButton />
         </div>
       </header>
@@ -106,7 +106,7 @@ export default function PortalPage() {
               <div className="empty-state">
                 <div className="empty-title">Your library is empty.</div>
                 <p className="empty-text">Head back to the home page and generate your first SOP. It'll save here automatically.</p>
-                <a href="/" className="empty-btn">Generate Your First SOP</a>
+                <a href="/?new=1" className="empty-btn">Generate Your First SOP</a>
               </div>
             ) : (
               <>

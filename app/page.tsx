@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
 
 const SAMPLE_SOPS = [
@@ -122,11 +122,12 @@ function UpsellBanner() {
 }
 
 function Landing({ onStart }: any) {
+  const { isSignedIn } = useUser();
   return (
     <div style={{ minHeight: "100vh", background: theme.cream }}>
       <Nav right={
         <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-          <a href="/login" style={{ fontSize: 13, color: "#1A1612", textDecoration: "none", fontFamily: "'DM Sans',sans-serif", fontWeight: 500, padding: "10px 20px", border: "1.5px solid #E8E2D9", borderRadius: 2, letterSpacing: "0.08em", textTransform: "uppercase" as const }}>Client Login</a>
+          <a href={isSignedIn ? "/portal" : "/login"} style={{ fontSize: 13, color: "#1A1612", textDecoration: "none", fontFamily: "'DM Sans',sans-serif", fontWeight: 500, padding: "10px 20px", border: "1.5px solid #E8E2D9", borderRadius: 2, letterSpacing: "0.08em", textTransform: "uppercase" as const }}>{isSignedIn ? "My Portal" : "Client Login"}</a>
           <Btn onClick={onStart}>Get Your Operations Manual</Btn>
         </div>
       } />
@@ -233,6 +234,7 @@ function Intake({ onDone }: any) {
   const filled = (isSignedIn || emailValid) && QUESTIONS.every(q => (answers[q.id] || "").trim());
 
   async function generate() {
+    let redirecting = false;
     setLoading(true); setError(""); setLimitReached(null);
     try {
       const res = await fetch("/api/generate", {
@@ -245,11 +247,17 @@ function Intake({ onDone }: any) {
         return;
       }
       if (sop.error) throw new Error(sop.error);
+      if (isSignedIn) {
+        if (sop.saved === false) throw new Error("Your procedure was generated but could not be saved to your library. Please try again.");
+        redirecting = true;
+        window.location.href = "/portal";
+        return;
+      }
       onDone({ ...sop, id: Date.now(), lastUpdated: new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" }), icon: ({ "Patient Experience": "✦", "Clinical Operations": "◈", "Staff Management": "◇", "Sales & Revenue": "◉", "Facility & Compliance": "◆" } as any)[sop.category] || "✦", spaName: answers.spaName });
     } catch (e: any) {
       setError(e.message || "Something went wrong. Please try again.");
     }
-    finally { setLoading(false); }
+    finally { if (!redirecting) setLoading(false); }
   }
 
   if (loading) return (
@@ -421,6 +429,10 @@ export default function App() {
   const [view, setView] = useState("landing");
   const [generatedSop, setGeneratedSop] = useState<any>(null);
   const [spaName, setSpaName] = useState("");
+
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("new") === "1") setView("intake");
+  }, []);
 
   function handleDone(sop: any) {
     setGeneratedSop(sop);
