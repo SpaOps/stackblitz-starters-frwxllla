@@ -1,7 +1,7 @@
 "use client";
 export const dynamic = 'force-dynamic';
 
-import { useUser, UserButton } from "@clerk/nextjs";
+import { useUser, useOrganization, UserButton, OrganizationSwitcher } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 
 
@@ -41,6 +41,7 @@ function formatDateTime(iso: string) {
 
 export default function PortalPage() {
   const { user, isLoaded } = useUser();
+  const { organization } = useOrganization();
   const [sops, setSops] = useState<SOP[]>([]);
   const [signoffs, setSignoffs] = useState<Signoff[]>([]);
   const [loading, setLoading] = useState(true);
@@ -69,7 +70,7 @@ export default function PortalPage() {
     }
 
     loadSops();
-  }, [user, isLoaded]);
+  }, [user, isLoaded, organization?.id]);
 
   const signoffCounts: Record<string, number> = {};
   signoffs.forEach(s => { signoffCounts[s.sop_id] = (signoffCounts[s.sop_id] || 0) + 1; });
@@ -96,10 +97,11 @@ export default function PortalPage() {
         <div className="hdr-left">
           <span className="logo">SpaOps</span>
           <span className="hdr-divider">·</span>
-          <span className="hdr-spa">{user?.firstName || "Your Spa"}</span>
+          <span className="hdr-spa">{organization?.name || user?.firstName || "Your Spa"}</span>
         </div>
         <div className="hdr-right">
           <a href="/?new=1" className="hdr-link">Generate New SOP</a>
+          <OrganizationSwitcher afterSelectOrganizationUrl="/portal" afterCreateOrganizationUrl="/portal" />
           <UserButton />
         </div>
       </header>

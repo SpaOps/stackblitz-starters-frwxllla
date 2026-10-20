@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { createAdminClient } from "@/lib/supabase";
+import { findClient } from "@/lib/client";
 
 // Emails in this list bypass the one-free-SOP limit entirely.
 // Use this for your own testing and for live demos on discovery calls.
@@ -112,7 +113,7 @@ export async function POST(req: NextRequest) {
 
     // Check if this request is coming from a logged-in Clerk user first.
     // Logged-in users are paying clients and are never subject to the free-demo cap.
-    const { userId } = await auth();
+    const { userId, orgId } = await auth();
 
     if (!userId) {
       // Anonymous / free-demo path: enforce one SOP per email.
@@ -224,20 +225,13 @@ Use exactly this JSON structure:
           user?.emailAddresses?.[0]?.emailAddress ??
           "pending@unknown.com";
 
-        // Find this user's client record (tolerates accidental duplicate rows)
-        const { data: existing } = await supabase
-          .from("clients")
-          .select("id, email")
-          .eq("clerk_user_id", userId)
-          .order("created_at", { ascending: true })
-          .limit(1);
-
-        let client = existing?.[0] ?? null;
+        // Find the spa's client record (shared by everyone in the same organization)
+        let client = await findClient(supabase, userId, orgId);
 
         if (!client) {
           const { data: newClient, error: clientError } = await supabase
             .from("clients")
-            .insert({ clerk_user_id: userId, email: userEmail, spa_name: spaName })
+            .insert({ clerk_user_id: userId, clerk_org_id: orgId ?? null, email: userEmail, spa_name: spaName })
             .select("id, email")
             .single();
           if (clientError) console.error("Failed to create client:", clientError);
