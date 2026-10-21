@@ -1,22 +1,22 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { createAdminClient } from "@/lib/supabase";
-import { findClient, resolveOrgId } from "@/lib/client";
+import { findClient, resolveOrg } from "@/lib/client";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
-  const { userId, orgId } = await auth();
+  const { userId, orgId, orgRole } = await auth();
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const supabase = createAdminClient();
 
-  const resolvedOrgId = await resolveOrgId(userId, orgId, req.headers.get("x-org-id"));
-  const client = await findClient(supabase, userId, resolvedOrgId);
+  const org = await resolveOrg(userId, orgId, orgRole, req.headers.get("x-org-id"));
+  const client = await findClient(supabase, userId, org.orgId);
 
-  if (!client) return NextResponse.json({ sops: [], signoffs: [] });
+  if (!client) return NextResponse.json({ sops: [], signoffs: [], canManage: org.canManage });
 
   const { data, error } = await supabase
     .from("sops")
@@ -46,5 +46,5 @@ export async function GET(req: Request) {
     }
   }
 
-  return NextResponse.json({ sops, signoffs });
+  return NextResponse.json({ sops, signoffs, canManage: org.canManage });
 }

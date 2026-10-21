@@ -45,6 +45,7 @@ export default function PortalPage() {
   const [sops, setSops] = useState<SOP[]>([]);
   const [signoffs, setSignoffs] = useState<Signoff[]>([]);
   const [loading, setLoading] = useState(true);
+  const [canManage, setCanManage] = useState(false);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
   const [copied, setCopied] = useState<string | null>(null);
@@ -62,6 +63,7 @@ export default function PortalPage() {
         const json = await res.json();
         setSops(json.sops || []);
         setSignoffs(json.signoffs || []);
+        setCanManage(json.canManage === true);
       } catch (err) {
         console.error("Load error:", err);
       } finally {
@@ -100,7 +102,7 @@ export default function PortalPage() {
           <span className="hdr-spa">{organization?.name || user?.firstName || "Your Spa"}</span>
         </div>
         <div className="hdr-right">
-          <a href="/?new=1" className="hdr-link">Generate New SOP</a>
+          {canManage && <a href="/?new=1" className="hdr-link">Generate New SOP</a>}
           <OrganizationSwitcher afterSelectOrganizationUrl="/portal" afterCreateOrganizationUrl="/portal" />
           <UserButton />
         </div>
@@ -125,7 +127,7 @@ export default function PortalPage() {
               <div className="empty-state">
                 <div className="empty-title">Your library is empty.</div>
                 <p className="empty-text">Head back to the home page and generate your first SOP. It'll save here automatically.</p>
-                <a href="/?new=1" className="empty-btn">Generate Your First SOP</a>
+                {canManage ? <a href="/?new=1" className="empty-btn">Generate Your First SOP</a> : <p>Ask an admin to add your first SOP.</p>}
               </div>
             ) : (
               <>

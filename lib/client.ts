@@ -58,25 +58,40 @@ export async function findClient(
   return data?.[0] ?? null;
 }
 
-// Works out which organization a request is for. Uses the session's active
-// organization when present. Otherwise it asks Clerk for the user's real
-// memberships, so a request can never claim an organization the user is not in:
-// the organization the portal says is selected (if the user belongs to it),
-// else the user's only organization.
-export async function resolveOrgId(
+export type OrgContext = {
+  orgId: string | null;
+  // Admins (and people not in any organization) can create and change SOPs.
+  // Members of an organization can only read.
+  canManage: boolean;
+};
+
+// Works out which organization a request is for, and whether the user is an
+// admin of it. Uses the session's active organization when present. Otherwise
+// it asks Clerk for the user's real memberships, so a request can never claim
+// an organization the user is not in: the organization the portal says is
+// selected (if the user belongs to it), else the user's only organization.
+export async function resolveOrg(
   userId: string,
   sessionOrgId?: string | null,
+  sessionOrgRole?: string | null,
   requestedOrgId?: string | null
-): Promise<string | null> {
-  if (sessionOrgId) return sessionOrgId;
+): Promise<OrgContext> {
+  if (sessionOrgId) {
+    return { orgId: sessionOrgId, canManage: sessionOrgRole === "org:admin" };
+  }
   try {
     const memberships = await clerkClient.users.getOrganizationMembershipList({ userId });
-    const ids = memberships.data.map((m) => m.organization.id);
-    if (requestedOrgId && ids.includes(requestedOrgId)) return requestedOrgId;
-    if (ids.length === 1) return ids[0];
-    return null;
+    const list = memberships.data;
+    const chosen =
+      (requestedOrgId && list.find((m) => m.organization.id === requestedOrgId)) ||
+      (list.length === 1 ? list[0] : null);
+    if (chosen) {
+      return { orgId: chosen.organization.id, canManage: chosen.role === "org:admin" };
+    }
+    return { orgId: null, canManage: true };
   } catch (err) {
     console.error("Failed to load organization memberships:", err);
-    return null;
+    // Fail closed for reads is not possible here, but never grant manage rights on error.
+    return { orgId: null, canManage: false };
   }
 }

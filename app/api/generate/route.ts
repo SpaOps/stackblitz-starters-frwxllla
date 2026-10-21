@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { createAdminClient } from "@/lib/supabase";
-import { findClient, resolveOrgId } from "@/lib/client";
+import { findClient, resolveOrg } from "@/lib/client";
 
 // Emails in this list bypass the one-free-SOP limit entirely.
 // Use this for your own testing and for live demos on discovery calls.
@@ -113,7 +113,19 @@ export async function POST(req: NextRequest) {
 
     // Check if this request is coming from a logged-in Clerk user first.
     // Logged-in users are paying clients and are never subject to the free-demo cap.
-    const { userId, orgId } = await auth();
+    const { userId, orgId, orgRole } = await auth();
+
+    // Signed-in users: only organization admins may generate and save SOPs.
+    let org: Awaited<ReturnType<typeof resolveOrg>> | null = null;
+    if (userId) {
+      org = await resolveOrg(userId, orgId, orgRole, req.headers.get("x-org-id"));
+      if (!org.canManage) {
+        return NextResponse.json(
+          { error: "Only organization admins can create SOPs. Ask an admin to add this one." },
+          { status: 403 }
+        );
+      }
+    }
 
     if (!userId) {
       // Anonymous / free-demo path: enforce one SOP per email.
@@ -226,7 +238,7 @@ Use exactly this JSON structure:
           "pending@unknown.com";
 
         // Find the spa's client record (shared by everyone in the same organization)
-        const resolvedOrgId = await resolveOrgId(userId, orgId, req.headers.get("x-org-id"));
+        const resolvedOrgId = org?.orgId ?? null;
         let client = await findClient(supabase, userId, resolvedOrgId);
 
         if (!client) {
