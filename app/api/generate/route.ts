@@ -125,6 +125,30 @@ export async function POST(req: NextRequest) {
           { status: 403 }
         );
       }
+
+      // Signed-in spas need an active subscription (the owner's own account is exempt).
+      const gateUser = await currentUser();
+      const gateEmail = gateUser?.emailAddresses?.[0]?.emailAddress?.toLowerCase() ?? "";
+      const exempt = BYPASS_EMAILS.some((e) => e.toLowerCase() === gateEmail);
+      if (!exempt) {
+        const gateDb = createAdminClient();
+        const gateClient = await findClient(gateDb, userId, org.orgId);
+        let status: string | null = null;
+        if (gateClient) {
+          const { data: billing } = await gateDb
+            .from("clients")
+            .select("subscription_status")
+            .eq("id", gateClient.id)
+            .maybeSingle();
+          status = billing?.subscription_status ?? null;
+        }
+        if (status !== "active" && status !== "trialing") {
+          return NextResponse.json(
+            { error: "An active subscription is required to create SOPs. Subscribe from your portal." },
+            { status: 402 }
+          );
+        }
+      }
     }
 
     if (!userId) {

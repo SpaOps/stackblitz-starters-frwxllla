@@ -15,8 +15,17 @@ export async function GET(req: Request) {
 
   const org = await resolveOrg(userId, orgId, orgRole, req.headers.get("x-org-id"));
   const client = await findClient(supabase, userId, org.orgId);
+  let subscription: { status: string | null; plan: string | null } = { status: null, plan: null };
+  if (client) {
+    const { data: billing } = await supabase
+      .from("clients")
+      .select("subscription_status, plan")
+      .eq("id", client.id)
+      .maybeSingle();
+    subscription = { status: billing?.subscription_status ?? null, plan: billing?.plan ?? null };
+  }
 
-  if (!client) return NextResponse.json({ sops: [], signoffs: [], canManage: org.canManage });
+  if (!client) return NextResponse.json({ sops: [], signoffs: [], canManage: org.canManage, subscription });
 
   const { data, error } = await supabase
     .from("sops")
@@ -46,5 +55,5 @@ export async function GET(req: Request) {
     }
   }
 
-  return NextResponse.json({ sops, signoffs, canManage: org.canManage });
+  return NextResponse.json({ sops, signoffs, canManage: org.canManage, subscription });
 }

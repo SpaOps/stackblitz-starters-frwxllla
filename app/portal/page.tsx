@@ -46,6 +46,9 @@ export default function PortalPage() {
   const [signoffs, setSignoffs] = useState<Signoff[]>([]);
   const [loading, setLoading] = useState(true);
   const [canManage, setCanManage] = useState(false);
+  const [subStatus, setSubStatus] = useState<string | null>(null);
+  const [checkoutBusy, setCheckoutBusy] = useState(false);
+  const [checkoutError, setCheckoutError] = useState("");
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
   const [copied, setCopied] = useState<string | null>(null);
@@ -64,6 +67,7 @@ export default function PortalPage() {
         setSops(json.sops || []);
         setSignoffs(json.signoffs || []);
         setCanManage(json.canManage === true);
+        setSubStatus(json.subscription?.status ?? null);
       } catch (err) {
         console.error("Load error:", err);
       } finally {
@@ -73,6 +77,24 @@ export default function PortalPage() {
 
     loadSops();
   }, [user, isLoaded, organization?.id]);
+
+  async function startCheckout(plan: "core" | "premium") {
+    setCheckoutBusy(true);
+    setCheckoutError("");
+    try {
+      const res = await fetch("/api/stripe/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...(organization?.id ? { "x-org-id": organization.id } : {}) },
+        body: JSON.stringify({ plan }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json.url) throw new Error(json.error || "Could not start checkout.");
+      window.location.href = json.url;
+    } catch (err: any) {
+      setCheckoutError(err.message || "Could not start checkout.");
+      setCheckoutBusy(false);
+    }
+  }
 
   const signoffCounts: Record<string, number> = {};
   signoffs.forEach(s => { signoffCounts[s.sop_id] = (signoffCounts[s.sop_id] || 0) + 1; });
@@ -120,7 +142,22 @@ export default function PortalPage() {
                   {loading ? "Loading your library..." : `${sops.length} SOP${sops.length === 1 ? "" : "s"} in your library`}
                 </p>
               </div>
-              <div className="welcome-badge"><span className="badge-dot" />Active subscription</div>
+              {subStatus === "active" || subStatus === "trialing" ? (
+                <div className="welcome-badge"><span className="badge-dot" />Active subscription</div>
+              ) : (
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+                  <span className="welcome-badge" style={{ opacity: 0.8 }}>
+                    {subStatus === "past_due" ? "Payment past due" : subStatus === "canceled" ? "Subscription canceled" : "No active subscription"}
+                  </span>
+                  {canManage && (
+                    <>
+                      <button className="empty-btn" disabled={checkoutBusy} onClick={() => startCheckout("core")}>Subscribe: Core $1,499/mo</button>
+                      <button className="empty-btn" disabled={checkoutBusy} onClick={() => startCheckout("premium")}>Premium $2,500/mo</button>
+                    </>
+                  )}
+                  {checkoutError && <span style={{ color: "#b3261e", fontSize: 13 }}>{checkoutError}</span>}
+                </div>
+              )}
             </div>
 
             {!loading && sops.length === 0 ? (
