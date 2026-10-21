@@ -75,6 +75,7 @@ const gs = `
 `;
 
 const CONTACT_MAILTO = "mailto:corwin@getspaops.com?subject=Build%20my%20SpaOps%20library";
+const CALENDLY_URL = "https://calendly.com/corwin-getspaops/30min";
 
 function Btn({ children, onClick, primary = false, full = false, disabled = false }: any) {
   return (
@@ -128,6 +129,7 @@ function Landing({ onStart }: any) {
       <Nav right={
         <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
           <a href={isSignedIn ? "/portal" : "/login"} style={{ fontSize: 13, color: "#1A1612", textDecoration: "none", fontFamily: "'DM Sans',sans-serif", fontWeight: 500, padding: "10px 20px", border: "1.5px solid #E8E2D9", borderRadius: 2, letterSpacing: "0.08em", textTransform: "uppercase" as const }}>{isSignedIn ? "My Portal" : "Client Login"}</a>
+          <a href={CALENDLY_URL} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: "#1A1612", textDecoration: "none", fontFamily: "'DM Sans',sans-serif", fontWeight: 500, padding: "10px 20px", border: "1.5px solid #E8E2D9", borderRadius: 2, letterSpacing: "0.08em", textTransform: "uppercase" as const }}>Book a Call</a>
           <Btn onClick={onStart}>Get Your Operations Manual</Btn>
         </div>
       } />
@@ -183,7 +185,7 @@ function Landing({ onStart }: any) {
                 <span style={{ fontSize: 14, fontWeight: 300, lineHeight: 1.5 }}>{f}</span>
               </div>
             ))}
-            <div style={{ marginTop: 28 }}><Btn primary full onClick={onStart}>Build Your First SOP Free →</Btn></div>
+            <div style={{ marginTop: 28 }}><Btn primary full onClick={() => window.open(CALENDLY_URL, "_blank")}>Book a 15-Minute Call →</Btn></div>
           </div>
 
           <div style={{ background: theme.dark, border: `1px solid ${theme.dark}`, borderRadius: 4, padding: "48px 36px 36px", textAlign: "left" }}>
@@ -196,7 +198,7 @@ function Landing({ onStart }: any) {
                 <span style={{ fontSize: 14, fontWeight: i === 0 ? 400 : 300, lineHeight: 1.5, color: i === 0 ? theme.gold : theme.cream }}>{f}</span>
               </div>
             ))}
-            <div style={{ marginTop: 28 }}><Btn full onClick={onStart}>Build Your First SOP Free →</Btn></div>
+            <div style={{ marginTop: 28 }}><Btn full onClick={() => window.open(CALENDLY_URL, "_blank")}>Book a 15-Minute Call →</Btn></div>
           </div>
 
         </div>

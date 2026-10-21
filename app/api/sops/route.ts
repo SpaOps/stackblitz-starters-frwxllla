@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { createAdminClient } from "@/lib/supabase";
-import { findClient, resolveOrg } from "@/lib/client";
+import { findClient, resolveOrg, OWNER_EMAILS } from "@/lib/client";
 
 export const dynamic = "force-dynamic";
 
@@ -39,6 +39,11 @@ export async function GET(req: Request) {
   }
 
   const sops = data ?? [];
+  // The owner / demo account always shows as subscribed.
+  const viewer = await currentUser();
+  const viewerEmail = viewer?.emailAddresses?.[0]?.emailAddress?.toLowerCase() ?? "";
+  if (OWNER_EMAILS.includes(viewerEmail)) subscription = { status: "active", plan: subscription.plan };
+
   let signoffs: any[] = [];
 
   if (sops.length > 0) {

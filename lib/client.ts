@@ -3,6 +3,9 @@ import { createAdminClient } from "@/lib/supabase";
 
 type Supa = ReturnType<typeof createAdminClient>;
 
+// Accounts that never need a subscription (owner / demo account).
+export const OWNER_EMAILS = ["corwin@getspaops.com"];
+
 export type ClientRecord = { id: string; email: string };
 
 // Finds the spa (client) record for a signed-in user. Server-only.
