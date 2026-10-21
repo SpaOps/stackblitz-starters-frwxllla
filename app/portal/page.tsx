@@ -96,6 +96,23 @@ export default function PortalPage() {
     }
   }
 
+  async function openBilling() {
+    setCheckoutBusy(true);
+    setCheckoutError("");
+    try {
+      const res = await fetch("/api/stripe/portal", {
+        method: "POST",
+        headers: organization?.id ? { "x-org-id": organization.id } : {},
+      });
+      const json = await res.json();
+      if (!res.ok || !json.url) throw new Error(json.error || "Could not open billing.");
+      window.location.href = json.url;
+    } catch (err: any) {
+      setCheckoutError(err.message || "Could not open billing.");
+      setCheckoutBusy(false);
+    }
+  }
+
   const signoffCounts: Record<string, number> = {};
   signoffs.forEach(s => { signoffCounts[s.sop_id] = (signoffCounts[s.sop_id] || 0) + 1; });
 
@@ -143,7 +160,13 @@ export default function PortalPage() {
                 </p>
               </div>
               {subStatus === "active" || subStatus === "trialing" ? (
-                <div className="welcome-badge"><span className="badge-dot" />Active subscription</div>
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+                  <div className="welcome-badge"><span className="badge-dot" />Active subscription</div>
+                  {canManage && (
+                    <button className="empty-btn" disabled={checkoutBusy} onClick={openBilling}>Manage billing</button>
+                  )}
+                  {checkoutError && <span style={{ color: "#b3261e", fontSize: 13 }}>{checkoutError}</span>}
+                </div>
               ) : (
                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
                   <span className="welcome-badge" style={{ opacity: 0.8 }}>
