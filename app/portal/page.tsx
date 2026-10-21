@@ -151,8 +151,8 @@ export default function PortalPage() {
                   </span>
                   {canManage && (
                     <>
-                      <button className="empty-btn" disabled={checkoutBusy} onClick={() => startCheckout("core")}>Subscribe: Core $1,499/mo</button>
-                      <button className="empty-btn" disabled={checkoutBusy} onClick={() => startCheckout("premium")}>Premium $2,500/mo</button>
+                      <button className="empty-btn" disabled={checkoutBusy} onClick={() => startCheckout("core")}>Subscribe: Pro $1,499/mo</button>
+                      <button className="empty-btn" disabled={checkoutBusy} onClick={() => startCheckout("premium")}>Concierge $2,500/mo</button>
                     </>
                   )}
                   {checkoutError && <span style={{ color: "#b3261e", fontSize: 13 }}>{checkoutError}</span>}

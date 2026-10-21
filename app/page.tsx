@@ -156,7 +156,7 @@ function Landing({ onStart }: any) {
       <section style={{ maxWidth: 900, margin: "0 auto", padding: "80px 48px" }}>
         <h2 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 40, fontWeight: 300, textAlign: "center", marginBottom: 56 }}>Everything your team needs to <em style={{ color: theme.gold }}>run like clockwork</em></h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 28 }}>
-          {[["✦", "Done-For-You Manuals", "Answer 6 questions about your spa. We write complete professional procedures for every workflow immediately."], ["◈", "Role-Based Access", "Staff see only their relevant procedures. Injectors see clinical protocols. Front desk sees patient experience flows."], ["◇", "Staff Sign-Off Tracking", "Send a link, your team acknowledges each procedure, and you get a dated record of who signed what."], ["◉", "Branded Staff Portal", "Your staff logs into a clean beautiful portal branded to your spa. Looks like you built it yourself."]].map(([ic, ti, de]) => (
+          {[["✦", "Done-For-You Manuals", "Answer 6 questions about your spa. We write complete professional procedures for every workflow immediately."], ["◈", "Team Access", "Managers get admin access to create and update procedures. The rest of your team can view the library."], ["◇", "Staff Sign-Off Tracking", "Send a link, your team acknowledges each procedure, and you get a dated record of who signed what."], ["◉", "Shared Team Library", "Everyone on your team works from one portal, so everyone sees the same up-to-date procedures."]].map(([ic, ti, de]) => (
             <div key={ti as string} className="hl" style={{ background: theme.card, border: `1px solid ${theme.border}`, borderRadius: 4, padding: 32 }}>
               <div style={{ fontSize: 22, color: theme.gold, marginBottom: 14 }}>{ic}</div>
               <h3 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 20, fontWeight: 500, marginBottom: 10 }}>{ti}</h3>
@@ -177,7 +177,7 @@ function Landing({ onStart }: any) {
             <div style={{ fontSize: 12, letterSpacing: "0.12em", textTransform: "uppercase" as const, color: theme.muted, marginBottom: 12 }}>Pro</div>
             <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 54, fontWeight: 300, lineHeight: 1 }}>$1,499<span style={{ fontSize: 17, color: theme.muted }}>/mo</span></div>
             <p style={{ color: theme.muted, margin: "12px 0 28px", fontWeight: 300, fontSize: 14, lineHeight: 1.6 }}>For the spa that has outgrown tribal knowledge.</p>
-            {["Unlimited done-for-you procedures", "Branded staff portal", "Staff sign-off tracking", "Role-based access for all staff", "Unlimited monthly revisions", "Quarterly workflow interviews", "Guided onboarding call", "Priority email support", "Multi-location available as add-on"].map(f => (
+            {["Unlimited done-for-you procedures", "Shared team library", "Staff sign-off tracking", "Admin and team member access", "Unlimited monthly revisions", "Quarterly workflow interviews", "Guided onboarding call", "Priority email support", "Multi-location available as add-on"].map(f => (
               <div key={f} style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: 11 }}>
                 <span style={{ color: theme.sage, flexShrink: 0 }}>✓</span>
                 <span style={{ fontSize: 14, fontWeight: 300, lineHeight: 1.5 }}>{f}</span>
@@ -202,7 +202,7 @@ function Landing({ onStart }: any) {
         </div>
 
         <p style={{ color: theme.muted, marginTop: 32, fontWeight: 300, fontSize: 13 }}>
-          30-day free trial on both plans. No contracts. Cancel anytime.
+          No contracts. Cancel anytime.
         </p>
       </section>
 

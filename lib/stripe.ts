@@ -3,8 +3,8 @@ import crypto from "crypto";
 // Minimal Stripe helpers using fetch, so no extra package is needed.
 
 export const PLANS = {
-  core: { name: "SpaOps Core", priceEnv: "STRIPE_PRICE_CORE" },
-  premium: { name: "SpaOps Premium", priceEnv: "STRIPE_PRICE_PREMIUM" },
+  core: { name: "SpaOps Pro", priceEnv: "STRIPE_PRICE_CORE" },
+  premium: { name: "SpaOps Concierge", priceEnv: "STRIPE_PRICE_PREMIUM" },
 } as const;
 
 export type PlanKey = keyof typeof PLANS;
