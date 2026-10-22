@@ -14,6 +14,7 @@ type SOP = {
   owner: string | null;
   sections: any;
   created_at: string;
+  edited_at?: string | null;
 };
 
 type Signoff = {
@@ -115,8 +116,15 @@ export default function PortalPage() {
 
   const subscribed = subStatus === "active" || subStatus === "trialing";
 
+  // Only sign-offs made after an SOP's last edit count as current.
+  const editedAt: Record<string, string | null | undefined> = {};
+  sops.forEach(s => { editedAt[s.id] = s.edited_at; });
   const signoffCounts: Record<string, number> = {};
-  signoffs.forEach(s => { signoffCounts[s.sop_id] = (signoffCounts[s.sop_id] || 0) + 1; });
+  signoffs.forEach(s => {
+    const edited = editedAt[s.sop_id];
+    if (edited && new Date(s.signed_at) < new Date(edited)) return;
+    signoffCounts[s.sop_id] = (signoffCounts[s.sop_id] || 0) + 1;
+  });
 
   const categories = ["All", ...Array.from(new Set(sops.map(s => s.category).filter(Boolean) as string[]))];
 
@@ -152,7 +160,17 @@ export default function PortalPage() {
 
       <div className="page">
         {activeSop ? (
-          <SOPDetail sop={activeSop} signoffs={signoffs.filter(s => s.sop_id === activeSop.id)} onBack={() => setActiveSop(null)} />
+          <SOPDetail
+            sop={activeSop}
+            signoffs={signoffs.filter(s => s.sop_id === activeSop.id)}
+            canManage={canManage}
+            orgId={organization?.id}
+            onBack={() => setActiveSop(null)}
+            onSaved={(updated: SOP) => {
+              setSops(prev => prev.map(x => (x.id === updated.id ? updated : x)));
+              setActiveSop(updated);
+            }}
+          />
         ) : (
           <>
             <div className="welcome-row">
@@ -315,8 +333,60 @@ export default function PortalPage() {
   );
 }
 
-function SOPDetail({ sop, signoffs, onBack }: { sop: SOP; signoffs: Signoff[]; onBack: () => void }) {
+function SOPDetail({ sop, signoffs, canManage, orgId, onBack, onSaved }: {
+  sop: SOP; signoffs: Signoff[]; canManage: boolean; orgId?: string; onBack: () => void; onSaved: (s: SOP) => void;
+}) {
   const [copied, setCopied] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [editError, setEditError] = useState("");
+  const [draft, setDraft] = useState<{ title: string; owner: string; purpose: string; scope: string; sections: { heading: string; steps: string[] }[] }>({
+    title: "", owner: "", purpose: "", scope: "", sections: [],
+  });
+
+  const isCurrent = (s: Signoff) => !sop.edited_at || new Date(s.signed_at) >= new Date(sop.edited_at);
+  const currentCount = signoffs.filter(isCurrent).length;
+  const outdatedCount = signoffs.length - currentCount;
+
+  function startEdit() {
+    setDraft({
+      title: sop.title || "",
+      owner: sop.owner || "",
+      purpose: sop.purpose || "",
+      scope: sop.scope || "",
+      sections: (Array.isArray(sop.sections) ? sop.sections : []).map((sec: any) => ({
+        heading: sec.heading || "",
+        steps: Array.isArray(sec.steps) ? [...sec.steps] : [],
+      })),
+    });
+    setEditError("");
+    setEditing(true);
+  }
+
+  function setSection(i: number, patch: Partial<{ heading: string; steps: string[] }>) {
+    setDraft(d => ({ ...d, sections: d.sections.map((sec, k) => (k === i ? { ...sec, ...patch } : sec)) }));
+  }
+
+  async function saveEdit() {
+    setSaving(true);
+    setEditError("");
+    try {
+      const res = await fetch(`/api/sops/${sop.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", ...(orgId ? { "x-org-id": orgId } : {}) },
+        body: JSON.stringify(draft),
+      });
+      const json = await res.json();
+      if (!res.ok || !json.sop) throw new Error(json.error || "Could not save your changes.");
+      onSaved(json.sop);
+      setEditing(false);
+    } catch (err: any) {
+      setEditError(err.message || "Could not save your changes.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
   const copyLink = () => {
     navigator.clipboard.writeText(`${window.location.origin}/signoff/${sop.id}`);
     setCopied(true);
@@ -331,13 +401,16 @@ function SOPDetail({ sop, signoffs, onBack }: { sop: SOP; signoffs: Signoff[]; o
           <div className="detail-cat">{sop.category}</div>
           <h1 className="detail-title">{sop.title}</h1>
           {sop.owner && <div className="detail-owner">Owner: <span>{sop.owner}</span></div>}
+          {sop.edited_at && <div className="detail-owner">Last edited {formatDateTime(sop.edited_at)}</div>}
+          {canManage && !editing && <button className="edit-btn" onClick={startEdit}>Edit this SOP</button>}
         </div>
         <div className="detail-body">
           <div className="so-block">
             <div className="so-head">
               <div>
                 <div className="detail-label">Staff sign-offs</div>
-                <div className="so-count">{signoffs.length === 0 ? "No one has signed off yet" : `${signoffs.length} signed`}</div>
+                <div className="so-count">{signoffs.length === 0 ? "No one has signed off yet" : `${currentCount} signed`}</div>
+                {outdatedCount > 0 && <div className="so-note">{outdatedCount} signed an earlier version and need to sign again. They can use the same link.</div>}
               </div>
               <button className="so-copy" onClick={copyLink}>{copied ? "✓ Link copied" : "Copy sign-off link"}</button>
             </div>
@@ -352,7 +425,7 @@ function SOPDetail({ sop, signoffs, onBack }: { sop: SOP; signoffs: Signoff[]; o
                       <tr key={s.id}>
                         <td>{s.staff_name}</td>
                         <td>{s.staff_email}</td>
-                        <td>{formatDateTime(s.signed_at)}</td>
+                        <td>{formatDateTime(s.signed_at)}{!isCurrent(s) && <span className="so-old"> · before last edit</span>}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -360,14 +433,49 @@ function SOPDetail({ sop, signoffs, onBack }: { sop: SOP; signoffs: Signoff[]; o
               </div>
             )}
           </div>
-          {sop.purpose && (
+          {editing && (
+            <div className="edit-form">
+              <label className="ef-label">Title</label>
+              <input className="ef-input" value={draft.title} maxLength={200} onChange={e => setDraft(d => ({ ...d, title: e.target.value }))} />
+              <label className="ef-label">Owner</label>
+              <input className="ef-input" value={draft.owner} maxLength={200} onChange={e => setDraft(d => ({ ...d, owner: e.target.value }))} />
+              <label className="ef-label">Purpose</label>
+              <textarea className="ef-input" rows={3} value={draft.purpose} maxLength={1500} onChange={e => setDraft(d => ({ ...d, purpose: e.target.value }))} />
+              <label className="ef-label">Scope</label>
+              <textarea className="ef-input" rows={2} value={draft.scope} maxLength={1500} onChange={e => setDraft(d => ({ ...d, scope: e.target.value }))} />
+              {draft.sections.map((sec, i) => (
+                <div key={i} className="ef-section">
+                  <div className="ef-row">
+                    <input className="ef-input" placeholder="Section heading" value={sec.heading} maxLength={200} onChange={e => setSection(i, { heading: e.target.value })} />
+                    <button className="ef-del" onClick={() => setDraft(d => ({ ...d, sections: d.sections.filter((_, k) => k !== i) }))}>Remove section</button>
+                  </div>
+                  {sec.steps.map((step, j) => (
+                    <div key={j} className="ef-row">
+                      <span className="step-num">{j + 1}</span>
+                      <textarea className="ef-input" rows={2} value={step} maxLength={1000} onChange={e => setSection(i, { steps: sec.steps.map((x, k) => (k === j ? e.target.value : x)) })} />
+                      <button className="ef-del" onClick={() => setSection(i, { steps: sec.steps.filter((_, k) => k !== j) })}>Remove</button>
+                    </div>
+                  ))}
+                  <button className="ef-add" onClick={() => setSection(i, { steps: [...sec.steps, ""] })}>+ Add step</button>
+                </div>
+              ))}
+              <button className="ef-add" onClick={() => setDraft(d => ({ ...d, sections: [...d.sections, { heading: "", steps: [""] }] }))}>+ Add section</button>
+              {signoffs.length > 0 && <p className="ef-warn">Saving marks earlier staff sign-offs as signed before the last edit, so your team knows to sign the new version.</p>}
+              {editError && <p className="ef-err">{editError}</p>}
+              <div className="ef-actions">
+                <button className="ef-save" disabled={saving} onClick={saveEdit}>{saving ? "Saving..." : "Save changes"}</button>
+                <button className="ef-cancel" disabled={saving} onClick={() => setEditing(false)}>Cancel</button>
+              </div>
+            </div>
+          )}
+          {!editing && sop.purpose && (
             <div className="detail-purpose">
               <div className="detail-label">Purpose</div>
               <p>{sop.purpose}</p>
               {sop.scope && <p className="detail-scope"><strong>Scope:</strong> {sop.scope}</p>}
             </div>
           )}
-          {Array.isArray(sop.sections) && sop.sections.map((sec: any, i: number) => (
+          {!editing && Array.isArray(sop.sections) && sop.sections.map((sec: any, i: number) => (
             <div key={i} className="detail-section">
               <div className="section-head">
                 <span className="section-num">{i + 1}</span>
@@ -408,6 +516,24 @@ function SOPDetail({ sop, signoffs, onBack }: { sop: SOP; signoffs: Signoff[]; o
         .step-row { display: flex; gap: 12px; margin-bottom: 12px; align-items: flex-start; }
         .step-num { min-width: 22px; height: 22px; border: 1.5px solid #e8d5b0; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #c4a886; font-weight: 500; flex-shrink: 0; margin-top: 2px; }
         .step-row p { font-size: 14px; line-height: 1.7; }
+        .edit-btn { margin-top: 18px; padding: 10px 16px; background: transparent; border: 1px solid #c4a886; border-radius: 2px; color: #c4a886; font-family: inherit; font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; cursor: pointer; }
+        .edit-btn:hover { background: #c4a886; color: #2c2420; }
+        .so-note { font-size: 12px; color: #a0522d; margin-top: 6px; max-width: 420px; line-height: 1.5; }
+        .so-old { color: #a0522d; font-size: 11px; }
+        .edit-form { margin-bottom: 32px; }
+        .ef-label { display: block; font-size: 11px; color: #8b6f5e; letter-spacing: .1em; text-transform: uppercase; font-weight: 600; margin: 14px 0 6px; }
+        .ef-input { width: 100%; border: 1px solid #e8e0d4; border-radius: 2px; padding: 10px 12px; font-family: inherit; font-size: 14px; line-height: 1.5; color: #2c2420; background: #fff; resize: vertical; }
+        .ef-input:focus { outline: none; border-color: #8b6f5e; }
+        .ef-section { border: 1px solid #e8e0d4; border-radius: 4px; padding: 16px; margin-top: 18px; background: #faf8f5; }
+        .ef-row { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 10px; }
+        .ef-del, .ef-add, .ef-cancel { background: none; border: none; color: #8b7b74; font-family: inherit; font-size: 12px; cursor: pointer; padding: 6px 4px; white-space: nowrap; }
+        .ef-del:hover, .ef-add:hover, .ef-cancel:hover { color: #8b6f5e; }
+        .ef-add { margin-top: 6px; }
+        .ef-warn { font-size: 12px; color: #8b7b74; margin-top: 18px; line-height: 1.5; }
+        .ef-err { font-size: 13px; color: #b3261e; margin-top: 12px; }
+        .ef-actions { display: flex; gap: 12px; align-items: center; margin-top: 20px; }
+        .ef-save { padding: 12px 22px; background: #8b6f5e; color: #faf8f5; border: none; border-radius: 2px; font-family: inherit; font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; cursor: pointer; }
+        .ef-save:disabled { opacity: .6; cursor: default; }
         .so-block { border: 1px solid #e8e0d4; border-radius: 4px; padding: 20px; margin-bottom: 32px; }
         .so-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
         .so-count { font-family: 'Georgia', serif; font-size: 20px; color: #2c2420; }

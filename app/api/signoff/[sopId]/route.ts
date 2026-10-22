@@ -53,7 +53,7 @@ export async function POST(
 
   const { data: sop } = await supabase
     .from("sops")
-    .select("id, client_id")
+    .select("id, client_id, edited_at")
     .eq("id", sopId)
     .maybeSingle();
 
@@ -63,13 +63,26 @@ export async function POST(
 
   const { data: existing } = await supabase
     .from("signoffs")
-    .select("id")
+    .select("id, signed_at")
     .eq("sop_id", sopId)
     .eq("staff_email", staffEmail)
     .maybeSingle();
 
   if (existing) {
-    return NextResponse.json({ ok: true, alreadySigned: true });
+    // If the SOP was edited after this person signed, let them sign the new version.
+    const outdated = sop.edited_at && new Date(existing.signed_at) < new Date(sop.edited_at);
+    if (!outdated) {
+      return NextResponse.json({ ok: true, alreadySigned: true });
+    }
+    const { error: resignError } = await supabase
+      .from("signoffs")
+      .update({ staff_name: staffName, signed_at: new Date().toISOString() })
+      .eq("id", existing.id);
+    if (resignError) {
+      console.error("Failed to update sign-off:", resignError);
+      return NextResponse.json({ error: "Could not save your sign-off. Please try again." }, { status: 500 });
+    }
+    return NextResponse.json({ ok: true, resigned: true });
   }
 
   const { error } = await supabase.from("signoffs").insert({
