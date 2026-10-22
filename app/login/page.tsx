@@ -51,7 +51,7 @@ export default function LoginPage() {
           </a>
 
           <p style={{ fontFamily: "'Helvetica Neue', sans-serif", fontSize: 12, color: "#b5a49a" }}>
-            Not a client yet? <a href="/pricing.html" style={{ color: "#8b6f5e", textDecoration: "none" }}>See pricing.html →</a>
+            Not a client yet? <a href="https://calendly.com/corwin-getspaops/30min" target="_blank" rel="noopener noreferrer" style={{ color: "#8b6f5e", textDecoration: "none" }}>Book a 15-minute call →</a>
           </p>
         </div>
       </section>

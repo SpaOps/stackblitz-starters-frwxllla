@@ -113,6 +113,8 @@ export default function PortalPage() {
     }
   }
 
+  const subscribed = subStatus === "active" || subStatus === "trialing";
+
   const signoffCounts: Record<string, number> = {};
   signoffs.forEach(s => { signoffCounts[s.sop_id] = (signoffCounts[s.sop_id] || 0) + 1; });
 
@@ -141,7 +143,7 @@ export default function PortalPage() {
           <span className="hdr-spa">{organization?.name || user?.firstName || "Your Spa"}</span>
         </div>
         <div className="hdr-right">
-          {canManage && <a href="/?new=1" className="hdr-link">Generate New SOP</a>}
+          {canManage && subscribed && <a href="/?new=1" className="hdr-link">Generate New SOP</a>}
           <OrganizationSwitcher afterSelectOrganizationUrl="/portal" afterCreateOrganizationUrl="/portal" />
           <UserButton />
         </div>
@@ -187,7 +189,7 @@ export default function PortalPage() {
               <div className="empty-state">
                 <div className="empty-title">Your library is empty.</div>
                 <p className="empty-text">Head back to the home page and generate your first SOP. It'll save here automatically.</p>
-                {canManage ? <a href="/?new=1" className="empty-btn">Generate Your First SOP</a> : <p>Ask an admin to add your first SOP.</p>}
+                {!canManage ? <p>Ask an admin to add your first SOP.</p> : subscribed ? <a href="/?new=1" className="empty-btn">Generate Your First SOP</a> : <p>Subscribe above to start building your library.</p>}
               </div>
             ) : (
               <>
