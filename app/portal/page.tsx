@@ -143,6 +143,7 @@ export default function PortalPage() {
           <span className="hdr-spa">{organization?.name || user?.firstName || "Your Spa"}</span>
         </div>
         <div className="hdr-right">
+          <a href="/" className="hdr-link">Home</a>
           {canManage && subscribed && <a href="/?new=1" className="hdr-link">Generate New SOP</a>}
           <OrganizationSwitcher afterSelectOrganizationUrl="/portal" afterCreateOrganizationUrl="/portal" />
           <UserButton />
@@ -188,8 +189,14 @@ export default function PortalPage() {
             {!loading && sops.length === 0 ? (
               <div className="empty-state">
                 <div className="empty-title">Your library is empty.</div>
-                <p className="empty-text">Head back to the home page and generate your first SOP. It'll save here automatically.</p>
-                {!canManage ? <p>Ask an admin to add your first SOP.</p> : subscribed ? <a href="/?new=1" className="empty-btn">Generate Your First SOP</a> : <p>Subscribe above to start building your library.</p>}
+                <p className="empty-text">
+                  {!canManage
+                    ? "Your library is empty. An admin on your team can add the first SOP."
+                    : subscribed
+                    ? "Generate your first SOP and it will save here automatically."
+                    : "Subscribe above to start building your library. Your SOPs will save here automatically."}
+                </p>
+                {canManage && subscribed && <a href="/?new=1" className="empty-btn">Generate Your First SOP</a>}
               </div>
             ) : (
               <>
