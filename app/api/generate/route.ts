@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { createAdminClient } from "@/lib/supabase";
 import { findClient, resolveOrg } from "@/lib/client";
+import { allowRequest, clientIp } from "@/lib/ratelimit";
 
 // Emails in this list bypass the one-free-SOP limit entirely.
 // Use this for your own testing and for live demos on discovery calls.
@@ -118,6 +119,9 @@ export async function POST(req: NextRequest) {
     // Signed-in users: only organization admins may generate and save SOPs.
     let org: Awaited<ReturnType<typeof resolveOrg>> | null = null;
     if (userId) {
+      if (!(await allowRequest("user_generate_hour", userId, 40, 3600))) {
+        return NextResponse.json({ error: "You are generating too quickly. Please wait a bit and try again." }, { status: 429 });
+      }
       org = await resolveOrg(userId, orgId, orgRole, req.headers.get("x-org-id"));
       if (!org.canManage) {
         return NextResponse.json(
@@ -152,6 +156,16 @@ export async function POST(req: NextRequest) {
     }
 
     if (!userId) {
+      // Abuse protection: cap free-demo attempts per IP and across the whole site.
+      const ip = clientIp(req);
+      const tooMany = NextResponse.json(
+        { error: "Too many requests. Please try again later, or book a call and we will build your library with you." },
+        { status: 429 }
+      );
+      if (!(await allowRequest("anon_generate_hour", ip, 5, 3600))) return tooMany;
+      if (!(await allowRequest("anon_generate_day", ip, 15, 86400))) return tooMany;
+      if (!(await allowRequest("anon_generate_site_day", "all", 300, 86400))) return tooMany;
+
       // Anonymous / free-demo path: enforce one SOP per email.
       if (!isValidEmail(email)) {
         return NextResponse.json(

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase";
+import { allowRequest, clientIp } from "@/lib/ratelimit";
 
 export const dynamic = "force-dynamic";
 
@@ -36,6 +37,10 @@ export async function POST(
   const { sopId } = params;
   if (!UUID.test(sopId)) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
+  if (!(await allowRequest("signoff_hour", clientIp(req), 40, 3600))) {
+    return NextResponse.json({ error: "Too many sign-offs from this connection. Please try again later." }, { status: 429 });
   }
 
   const body = await req.json().catch(() => null);
