@@ -75,6 +75,7 @@ const gs = `
 `;
 
 const CONTACT_MAILTO = "mailto:corwin@getspaops.com?subject=Build%20my%20SpaOps%20library";
+const BUY_URL = "https://accounts.getspaops.com/sign-up?redirect_url=https%3A%2F%2Fgetspaops.com%2Fportal";
 const CALENDLY_URL = "https://calendly.com/corwin-getspaops/30min";
 
 function Btn({ children, onClick, primary = false, full = false, disabled = false }: any) {
@@ -185,7 +186,7 @@ function Landing({ onStart }: any) {
                 <span style={{ fontSize: 14, fontWeight: 300, lineHeight: 1.5 }}>{f}</span>
               </div>
             ))}
-            <div style={{ marginTop: 28 }}><Btn primary full onClick={() => window.open(CALENDLY_URL, "_blank")}>Book a 15-Minute Call →</Btn></div>
+            <div style={{ marginTop: 28 }}><Btn primary full onClick={() => { window.location.href = isSignedIn ? "/portal" : BUY_URL; }}>{isSignedIn ? "Go to My Portal →" : "Get Started with Pro →"}</Btn><a href={CALENDLY_URL} target="_blank" rel="noopener noreferrer" style={{ display: "block", marginTop: 14, textAlign: "center", fontSize: 13, color: theme.muted, textDecoration: "underline", fontFamily: "'DM Sans',sans-serif" }}>or book a 15-minute call first</a></div>
           </div>
 
           <div style={{ background: theme.dark, border: `1px solid ${theme.dark}`, borderRadius: 4, padding: "48px 36px 36px", textAlign: "left" }}>
@@ -198,7 +199,7 @@ function Landing({ onStart }: any) {
                 <span style={{ fontSize: 14, fontWeight: i === 0 ? 400 : 300, lineHeight: 1.5, color: i === 0 ? theme.gold : theme.cream }}>{f}</span>
               </div>
             ))}
-            <div style={{ marginTop: 28 }}><Btn full onClick={() => window.open(CALENDLY_URL, "_blank")}>Book a 15-Minute Call →</Btn></div>
+            <div style={{ marginTop: 28 }}><Btn full onClick={() => { window.location.href = isSignedIn ? "/portal" : BUY_URL; }}>{isSignedIn ? "Go to My Portal →" : "Get Started with Concierge →"}</Btn><a href={CALENDLY_URL} target="_blank" rel="noopener noreferrer" style={{ display: "block", marginTop: 14, textAlign: "center", fontSize: 13, color: theme.goldLight, textDecoration: "underline", fontFamily: "'DM Sans',sans-serif" }}>or book a 15-minute call first</a></div>
           </div>
 
         </div>
