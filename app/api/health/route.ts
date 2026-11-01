@@ -3,7 +3,7 @@ import { createAdminClient } from "@/lib/supabase";
 
 export const dynamic = "force-dynamic";
 
-// Public uptime check for an external monitor. Reveals only ok/not-ok, never values.
+// Public uptime check for an external monitor. Reveals only ok/not-ok and the NAMES of missing settings, never values.
 export async function GET() {
   const required = [
     "NEXT_PUBLIC_SUPABASE_URL",
@@ -26,5 +26,5 @@ export async function GET() {
   }
 
   const ok = database && missing.length === 0;
-  return NextResponse.json({ ok, database, config: missing.length === 0 }, { status: ok ? 200 : 503 });
+  return NextResponse.json({ ok, database, config: missing.length === 0, missing }, { status: ok ? 200 : 503 });
 }
