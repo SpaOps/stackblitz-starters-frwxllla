@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useUser } from "@clerk/nextjs";
 
 const SAMPLE_SOPS = [
@@ -87,10 +87,10 @@ function Btn({ children, onClick, primary = false, full = false, disabled = fals
   );
 }
 
-function Nav({ right }: any) {
+function Nav({ right, onHome }: any) {
   return (
     <nav className="nav-bar" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "24px 48px", borderBottom: `1px solid ${theme.border}`, background: theme.cream }}>
-      <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 24, fontWeight: 600, letterSpacing: "0.05em" }}>
+      <div onClick={onHome} role={onHome ? "link" : undefined} style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 24, fontWeight: 600, letterSpacing: "0.05em", cursor: onHome ? "pointer" : undefined }}>
         Spa<span style={{ color: theme.gold }}>Ops</span>
       </div>
       {right}
@@ -226,7 +226,7 @@ const QUESTIONS = [
   { id: "tools", label: "What software or tools do you use?", placeholder: "e.g. Jane App, Mindbody, Square, Slack..." },
 ];
 
-function Intake({ onDone }: any) {
+function Intake({ onDone, onBack }: any) {
   const [answers, setAnswers] = useState<any>({});
   const [email, setEmail] = useState("");
   const { isSignedIn } = useUser();
@@ -273,7 +273,7 @@ function Intake({ onDone }: any) {
 
   if (limitReached) return (
     <div style={{ minHeight: "100vh", background: theme.cream }}>
-      <Nav right={<span style={{ fontSize: 13, color: theme.muted }}>Free Operations Manual</span>} />
+      <Nav onHome={onBack} right={<div style={{ display: "flex", alignItems: "center", gap: 14 }}><button onClick={onBack} style={{ background: "none", border: `1.5px solid ${theme.border}`, borderRadius: 2, padding: "9px 14px", cursor: "pointer", fontFamily: "'DM Sans',sans-serif", fontSize: 12, fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase" as const, color: "#1A1612" }}>← Back</button><span className="nav-label" style={{ fontSize: 13, color: theme.muted }}>Free Operations Manual</span></div>} />
       <div style={{ maxWidth: 560, margin: "0 auto", padding: "100px 32px", textAlign: "center" }}>
         <div style={{ fontSize: 40, color: theme.gold, marginBottom: 20 }}>✦</div>
         <h1 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 32, fontWeight: 300, marginBottom: 16 }}>You've used your free procedure</h1>
@@ -288,7 +288,7 @@ function Intake({ onDone }: any) {
 
   return (
     <div style={{ minHeight: "100vh", background: theme.cream }}>
-      <Nav right={<span style={{ fontSize: 13, color: theme.muted }}>Free Operations Manual</span>} />
+      <Nav onHome={onBack} right={<div style={{ display: "flex", alignItems: "center", gap: 14 }}><button onClick={onBack} style={{ background: "none", border: `1.5px solid ${theme.border}`, borderRadius: 2, padding: "9px 14px", cursor: "pointer", fontFamily: "'DM Sans',sans-serif", fontSize: 12, fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase" as const, color: "#1A1612" }}>← Back</button><span className="nav-label" style={{ fontSize: 13, color: theme.muted }}>Free Operations Manual</span></div>} />
       <div style={{ maxWidth: 640, margin: "0 auto", padding: "64px 32px" }}>
         <div style={{ marginBottom: 40 }}>
           <div style={{ display: "inline-block", background: theme.goldLight, padding: "5px 14px", borderRadius: 2, fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 18, fontWeight: 500 }}>6 Quick Questions</div>
@@ -361,7 +361,7 @@ function SOPDoc({ sop, onBack }: any) {
   );
 }
 
-function Portal({ generatedSop, spaName }: any) {
+function Portal({ generatedSop, spaName, onBack }: any) {
   const [active, setActive] = useState<any>(null);
   const [search, setSearch] = useState("");
   const [cat, setCat] = useState("All");
@@ -375,6 +375,7 @@ function Portal({ generatedSop, spaName }: any) {
       <nav className="nav-bar" style={{ background: theme.dark, padding: "18px 32px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div><div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 18, color: theme.cream }}>{name}</div><div style={{ fontSize: 10, color: theme.muted, letterSpacing: "0.1em", textTransform: "uppercase" }}>Powered by SpaOps</div></div>
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <button onClick={onBack} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 12, color: theme.cream, letterSpacing: "0.06em", textTransform: "uppercase" as const, fontFamily: "'DM Sans',sans-serif" }}>← Home</button>
           <a href="/login" style={{ fontSize: 12, color: theme.muted, textDecoration: "none", letterSpacing: "0.06em", textTransform: "uppercase" as const }}>Client Login</a>
           <a href={CONTACT_MAILTO} className="sb" style={{ display: "inline-block", padding: "8px 18px", borderRadius: 2, fontFamily: "'DM Sans',sans-serif", fontSize: 11, fontWeight: 500, letterSpacing: "0.08em", textTransform: "uppercase", textDecoration: "none", color: theme.dark }}>Get Started</a>
         </div>
@@ -433,22 +434,45 @@ export default function App() {
   const [generatedSop, setGeneratedSop] = useState<any>(null);
   const [spaName, setSpaName] = useState("");
 
+  const cameFromPortal = useRef(false);
+
+  // Move between screens and record each one in the browser history, so the
+  // browser/phone Back button returns to the previous screen instead of leaving the site.
+  function goTo(next: string) {
+    setView(next);
+    window.history.pushState({ view: next }, "");
+    window.scrollTo(0, 0);
+  }
+
   useEffect(() => {
-    if (new URLSearchParams(window.location.search).get("new") === "1") setView("intake");
+    if (new URLSearchParams(window.location.search).get("new") === "1") {
+      cameFromPortal.current = true;
+      setView("intake");
+      window.history.replaceState({ view: "intake" }, "");
+    }
+    const onPop = (e: PopStateEvent) => setView(e.state?.view || "landing");
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
   }, []);
+
+  function goHome() {
+    // Signed-in users who came from "Generate New SOP" go back to their portal.
+    if (cameFromPortal.current) { window.location.href = "/portal"; return; }
+    goTo("landing");
+  }
 
   function handleDone(sop: any) {
     setGeneratedSop(sop);
     setSpaName(sop.spaName || "");
-    setView("portal");
+    goTo("portal");
   }
 
   return (
     <>
       <style>{gs}</style>
-      {view === "landing" && <Landing onStart={() => setView("intake")} />}
-      {view === "intake" && <Intake onDone={handleDone} />}
-      {view === "portal" && <Portal generatedSop={generatedSop} spaName={spaName} />}
+      {view === "landing" && <Landing onStart={() => goTo("intake")} />}
+      {view === "intake" && <Intake onDone={handleDone} onBack={goHome} />}
+      {view === "portal" && <Portal generatedSop={generatedSop} spaName={spaName} onBack={goHome} />}
     </>
   );
 }

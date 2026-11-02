@@ -46,3 +46,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
 
 /* Outline button on the dark Concierge card needs light text to be readable */
 .btn-on-dark button { color: #F2EDE6 !important; border-color: rgba(242, 237, 230, 0.55) !important; }
+
+@media (max-width: 640px) {
+  .nav-label { display: none; }
+}
