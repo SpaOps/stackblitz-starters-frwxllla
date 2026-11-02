@@ -472,6 +472,7 @@ function SOPDetail({ sop, signoffs, canManage, orgId, demo, onBack, onSaved }: {
           </div>
           {editing && (
             <div className="edit-form">
+              <p className="ef-warn" style={{ marginTop: 0, marginBottom: 6 }}>Do not enter patient names or health information in SOPs.</p>
               <label className="ef-label">Title</label>
               <input className="ef-input" value={draft.title} maxLength={200} onChange={e => setDraft(d => ({ ...d, title: e.target.value }))} />
               <label className="ef-label">Owner</label>
