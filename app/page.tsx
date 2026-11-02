@@ -89,7 +89,7 @@ function Btn({ children, onClick, primary = false, full = false, disabled = fals
 
 function Nav({ right }: any) {
   return (
-    <nav style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "24px 48px", borderBottom: `1px solid ${theme.border}`, background: theme.cream }}>
+    <nav className="nav-bar" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "24px 48px", borderBottom: `1px solid ${theme.border}`, background: theme.cream }}>
       <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 24, fontWeight: 600, letterSpacing: "0.05em" }}>
         Spa<span style={{ color: theme.gold }}>Ops</span>
       </div>
@@ -128,13 +128,13 @@ function Landing({ onStart }: any) {
   return (
     <div style={{ minHeight: "100vh", background: theme.cream }}>
       <Nav right={
-        <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-          <a href={isSignedIn ? "/portal" : "/login"} style={{ fontSize: 13, color: "#1A1612", textDecoration: "none", fontFamily: "'DM Sans',sans-serif", fontWeight: 500, padding: "10px 20px", border: "1.5px solid #E8E2D9", borderRadius: 2, letterSpacing: "0.08em", textTransform: "uppercase" as const }}>{isSignedIn ? "My Portal" : "Client Login"}</a>
-          <a href={CALENDLY_URL} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: "#1A1612", textDecoration: "none", fontFamily: "'DM Sans',sans-serif", fontWeight: 500, padding: "10px 20px", border: "1.5px solid #E8E2D9", borderRadius: 2, letterSpacing: "0.08em", textTransform: "uppercase" as const }}>Book a Call</a>
+        <div className="nav-right" style={{ display: "flex", gap: 12, alignItems: "center" }}>
+          <a className="nav-link" href={isSignedIn ? "/portal" : "/login"} style={{ fontSize: 13, color: "#1A1612", textDecoration: "none", fontFamily: "'DM Sans',sans-serif", fontWeight: 500, padding: "10px 20px", border: "1.5px solid #E8E2D9", borderRadius: 2, letterSpacing: "0.08em", textTransform: "uppercase" as const }}>{isSignedIn ? "My Portal" : "Client Login"}</a>
+          <a className="nav-link" href={CALENDLY_URL} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: "#1A1612", textDecoration: "none", fontFamily: "'DM Sans',sans-serif", fontWeight: 500, padding: "10px 20px", border: "1.5px solid #E8E2D9", borderRadius: 2, letterSpacing: "0.08em", textTransform: "uppercase" as const }}>Book a Call</a>
           <Btn onClick={onStart}>Get Your Operations Manual</Btn>
         </div>
       } />
-      <section style={{ maxWidth: 900, margin: "0 auto", padding: "100px 48px 80px", textAlign: "center" }}>
+      <section className="sec-hero" style={{ maxWidth: 900, margin: "0 auto", padding: "100px 48px 80px", textAlign: "center" }}>
         <div className="fu1" style={{ display: "inline-block", background: theme.goldLight, padding: "6px 16px", borderRadius: 2, fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 32, fontWeight: 500 }}>Built exclusively for med spas</div>
         <h1 className="fu2" style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(42px,7vw,76px)", fontWeight: 300, lineHeight: 1.1, marginBottom: 28 }}>
           Your entire med spa,<br /><em style={{ color: theme.gold }}>documented in minutes.</em>
@@ -148,15 +148,15 @@ function Landing({ onStart }: any) {
         </div>
       </section>
 
-      <div style={{ background: theme.dark, padding: "40px 48px" }}>
-        <div style={{ maxWidth: 900, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 32, textAlign: "center" }}>
+      <div className="sec-stats" style={{ background: theme.dark, padding: "40px 48px" }}>
+        <div className="stats-grid" style={{ maxWidth: 900, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 32, textAlign: "center" }}>
           {[["Every role", "Front desk, injectors, and managers each get procedures written for their job"], ["One source", "Your team stops asking you and starts checking the portal"], ["Under 7 days", "From onboarding call to a live staff portal your team can use"]].map(([s, l]) => (
             <div key={s}><div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 34, fontWeight: 300, color: theme.gold, marginBottom: 8 }}>{s}</div><div style={{ fontSize: 13, color: theme.goldLight, lineHeight: 1.5, fontWeight: 300 }}>{l}</div></div>
           ))}
         </div>
       </div>
 
-      <section style={{ maxWidth: 900, margin: "0 auto", padding: "80px 48px" }}>
+      <section className="sec-pad" style={{ maxWidth: 900, margin: "0 auto", padding: "80px 48px" }}>
         <h2 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 40, fontWeight: 300, textAlign: "center", marginBottom: 56 }}>Everything your team needs to <em style={{ color: theme.gold }}>run like clockwork</em></h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 28 }}>
           {[["✦", "Done-For-You Manuals", "Answer 6 questions about your spa. We write complete professional procedures for every workflow immediately."], ["◈", "Team Access", "Managers get admin access to create and update procedures. The rest of your team can view the library."], ["◇", "Staff Sign-Off Tracking", "Send a link, your team acknowledges each procedure, and you get a dated record of who signed what."], ["◉", "Shared Team Library", "Everyone on your team works from one portal, so everyone sees the same up-to-date procedures."]].map(([ic, ti, de]) => (
@@ -169,13 +169,13 @@ function Landing({ onStart }: any) {
         </div>
       </section>
 
-      <section id="portal" style={{ maxWidth: 940, margin: "0 auto", padding: "60px 48px 100px", textAlign: "center" }}>
+      <section id="portal" className="sec-pad" style={{ maxWidth: 940, margin: "0 auto", padding: "60px 48px 100px", textAlign: "center" }}>
         <h2 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 38, fontWeight: 300, marginBottom: 12 }}>Simple, transparent pricing</h2>
         <p style={{ color: theme.muted, marginBottom: 48, fontWeight: 300 }}>Two plans. Same system. The difference is how much of me you get.</p>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 24, alignItems: "start" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(300px,100%),1fr))", gap: 24, alignItems: "start" }}>
 
-          <div style={{ background: theme.card, border: `2px solid ${theme.gold}`, borderRadius: 4, padding: "48px 36px 36px", position: "relative", textAlign: "left" }}>
+          <div className="price-card" style={{ background: theme.card, border: `2px solid ${theme.gold}`, borderRadius: 4, padding: "48px 36px 36px", position: "relative", textAlign: "left" }}>
             <div style={{ position: "absolute", top: -14, left: "50%", transform: "translateX(-50%)", background: theme.gold, color: theme.dark, padding: "4px 20px", borderRadius: 2, fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase" as const, fontWeight: 500, whiteSpace: "nowrap" as const }}>Most Popular</div>
             <div style={{ fontSize: 12, letterSpacing: "0.12em", textTransform: "uppercase" as const, color: theme.muted, marginBottom: 12 }}>Pro</div>
             <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 54, fontWeight: 300, lineHeight: 1 }}>$1,499<span style={{ fontSize: 17, color: theme.muted }}>/mo</span></div>
@@ -189,7 +189,7 @@ function Landing({ onStart }: any) {
             <div style={{ marginTop: 28 }}><Btn primary full onClick={() => { window.location.href = isSignedIn ? "/portal" : BUY_URL; }}>{isSignedIn ? "Go to My Portal →" : "Get Started with Pro →"}</Btn><a href={CALENDLY_URL} target="_blank" rel="noopener noreferrer" style={{ display: "block", marginTop: 14, textAlign: "center", fontSize: 13, color: theme.muted, textDecoration: "underline", fontFamily: "'DM Sans',sans-serif" }}>or book a 15-minute call first</a></div>
           </div>
 
-          <div style={{ background: theme.dark, border: `1px solid ${theme.dark}`, borderRadius: 4, padding: "48px 36px 36px", textAlign: "left" }}>
+          <div className="price-card" style={{ background: theme.dark, border: `1px solid ${theme.dark}`, borderRadius: 4, padding: "48px 36px 36px", textAlign: "left" }}>
             <div style={{ fontSize: 12, letterSpacing: "0.12em", textTransform: "uppercase" as const, color: theme.goldLight, marginBottom: 12 }}>Concierge</div>
             <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 54, fontWeight: 300, lineHeight: 1, color: theme.cream }}>$2,500<span style={{ fontSize: 17, color: theme.muted }}>/mo</span></div>
             <p style={{ color: theme.goldLight, margin: "12px 0 28px", fontWeight: 300, fontSize: 14, lineHeight: 1.6, opacity: 0.75 }}>For multi-location practices that want it handled.</p>
@@ -199,7 +199,7 @@ function Landing({ onStart }: any) {
                 <span style={{ fontSize: 14, fontWeight: i === 0 ? 400 : 300, lineHeight: 1.5, color: i === 0 ? theme.gold : theme.cream }}>{f}</span>
               </div>
             ))}
-            <div style={{ marginTop: 28 }}><Btn full onClick={() => { window.location.href = isSignedIn ? "/portal" : BUY_URL; }}>{isSignedIn ? "Go to My Portal →" : "Get Started with Concierge →"}</Btn><a href={CALENDLY_URL} target="_blank" rel="noopener noreferrer" style={{ display: "block", marginTop: 14, textAlign: "center", fontSize: 13, color: theme.goldLight, textDecoration: "underline", fontFamily: "'DM Sans',sans-serif" }}>or book a 15-minute call first</a></div>
+            <div style={{ marginTop: 28 }}><div className="btn-on-dark"><Btn full onClick={() => { window.location.href = isSignedIn ? "/portal" : BUY_URL; }}>{isSignedIn ? "Go to My Portal →" : "Get Started with Concierge →"}</Btn></div><a href={CALENDLY_URL} target="_blank" rel="noopener noreferrer" style={{ display: "block", marginTop: 14, textAlign: "center", fontSize: 13, color: theme.goldLight, textDecoration: "underline", fontFamily: "'DM Sans',sans-serif" }}>or book a 15-minute call first</a></div>
           </div>
 
         </div>
@@ -209,7 +209,7 @@ function Landing({ onStart }: any) {
         </p>
       </section>
 
-      <footer style={{ borderTop: `1px solid ${theme.border}`, padding: "28px 48px", textAlign: "center" }}>
+      <footer className="sec-foot" style={{ borderTop: `1px solid ${theme.border}`, padding: "28px 48px", textAlign: "center" }}>
         <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 20, color: theme.gold, marginBottom: 6 }}>SpaOps</div>
         <p style={{ fontSize: 12, color: theme.muted }}>© 2026 SpaOps — Built for med spas, by operators who get it.</p>
       </footer>
@@ -372,7 +372,7 @@ function Portal({ generatedSop, spaName }: any) {
 
   return (
     <div style={{ minHeight: "100vh", background: theme.cream }}>
-      <nav style={{ background: theme.dark, padding: "18px 32px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <nav className="nav-bar" style={{ background: theme.dark, padding: "18px 32px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div><div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 18, color: theme.cream }}>{name}</div><div style={{ fontSize: 10, color: theme.muted, letterSpacing: "0.1em", textTransform: "uppercase" }}>Powered by SpaOps</div></div>
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
           <a href="/login" style={{ fontSize: 12, color: theme.muted, textDecoration: "none", letterSpacing: "0.06em", textTransform: "uppercase" as const }}>Client Login</a>
@@ -394,7 +394,7 @@ function Portal({ generatedSop, spaName }: any) {
               {cats.map(c => <button key={c} onClick={() => setCat(c)} style={{ padding: "8px 14px", border: `1.5px solid ${cat === c ? theme.gold : theme.border}`, background: cat === c ? theme.gold : "transparent", color: cat === c ? theme.dark : theme.muted, borderRadius: 2, fontSize: 11, cursor: "pointer", fontFamily: "'DM Sans',sans-serif", fontWeight: cat === c ? 500 : 300 }}>{c}</button>)}
             </div>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(260px,1fr))", gap: 18 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(min(260px,100%),1fr))", gap: 18 }}>
             {filtered.map((sop: any) => (
               <div key={sop.id} onClick={() => setActive(sop)} className="hl" style={{ background: theme.card, border: `1px solid ${sop.id === generatedSop?.id ? theme.gold : theme.border}`, borderRadius: 4, padding: 26, cursor: "pointer", position: "relative" }}>
                 {sop.id === generatedSop?.id && <div style={{ position: "absolute", top: 10, right: 10, background: theme.gold, color: theme.dark, fontSize: 9, padding: "2px 7px", borderRadius: 2, fontWeight: 500 }}>NEW</div>}

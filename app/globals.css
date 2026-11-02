@@ -25,3 +25,24 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+
+/* ---------- Mobile layout (phones) ---------- */
+html, body { max-width: 100%; overflow-x: hidden; }
+
+@media (max-width: 640px) {
+  .nav-bar { flex-wrap: wrap !important; gap: 12px !important; padding: 14px 16px !important; }
+  .nav-right { flex-wrap: wrap !important; gap: 8px !important; width: 100%; }
+  .nav-right > * { flex: 1 1 auto; text-align: center; }
+  .nav-link { padding: 9px 12px !important; font-size: 11px !important; letter-spacing: 0.06em !important; }
+  .nav-right button { padding: 9px 12px !important; font-size: 11px !important; letter-spacing: 0.06em !important; }
+
+  .sec-hero { padding: 48px 20px 40px !important; }
+  .sec-pad { padding-left: 20px !important; padding-right: 20px !important; }
+  .sec-stats { padding: 32px 20px !important; }
+  .stats-grid { grid-template-columns: 1fr !important; gap: 24px !important; }
+  .sec-foot { padding: 24px 20px !important; }
+  .price-card { padding: 40px 22px 28px !important; }
+}
+
+/* Outline button on the dark Concierge card needs light text to be readable */
+.btn-on-dark button { color: #F2EDE6 !important; border-color: rgba(242, 237, 230, 0.55) !important; }
