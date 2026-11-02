@@ -50,3 +50,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
 @media (max-width: 640px) {
   .nav-label { display: none; }
 }
+
+@media (max-width: 640px) {
+  .shot-row { grid-template-columns: 1fr !important; }
+}
