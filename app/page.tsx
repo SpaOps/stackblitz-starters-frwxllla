@@ -144,7 +144,7 @@ function Landing({ onStart }: any) {
         </p>
         <div className="fu4" style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
           <Btn primary onClick={onStart}>Build Your First SOP Free →</Btn>
-          <Btn onClick={() => document.getElementById("portal")?.scrollIntoView({ behavior: "smooth" })}>See How It Works</Btn>
+          <Btn onClick={() => document.getElementById("product")?.scrollIntoView({ behavior: "smooth" })}>See How It Works</Btn>
         </div>
       </section>
 
@@ -158,7 +158,7 @@ function Landing({ onStart }: any) {
 
       <section className="sec-pad" style={{ maxWidth: 900, margin: "0 auto", padding: "80px 48px" }}>
         <h2 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 40, fontWeight: 300, textAlign: "center", marginBottom: 56 }}>Everything your team needs to <em style={{ color: theme.gold }}>run like clockwork</em></h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 28 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(190px,1fr))", gap: 28 }}>
           {[["✦", "Done-For-You Manuals", "Answer 6 questions about your spa. We write complete professional procedures for every workflow immediately."], ["◈", "Team Access", "Managers get admin access to create and update procedures. The rest of your team can view the library."], ["◇", "Staff Sign-Off Tracking", "Send a link, your team acknowledges each procedure, and you get a dated record of who signed what."], ["◉", "Shared Team Library", "Everyone on your team works from one portal, so everyone sees the same up-to-date procedures."]].map(([ic, ti, de]) => (
             <div key={ti as string} className="hl" style={{ background: theme.card, border: `1px solid ${theme.border}`, borderRadius: 4, padding: 32 }}>
               <div style={{ fontSize: 22, color: theme.gold, marginBottom: 14 }}>{ic}</div>
@@ -169,9 +169,31 @@ function Landing({ onStart }: any) {
         </div>
       </section>
 
+      <section id="product" className="sec-pad" style={{ maxWidth: 1000, margin: "0 auto", padding: "20px 48px 80px", textAlign: "center" }}>
+        <h2 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 38, fontWeight: 300, marginBottom: 12 }}>See exactly what you are getting</h2>
+        <p style={{ color: theme.muted, marginBottom: 40, fontWeight: 300, maxWidth: 620, margin: "0 auto 40px", lineHeight: 1.7 }}>
+          One library for your whole team, with a dated record of who has read and signed every procedure. The screens below use sample data.
+        </p>
+        <img src="/screens/signoffs.webp" alt="A SpaOps procedure showing which staff members have signed it and who needs to sign again after an edit" loading="lazy" style={{ width: "100%", height: "auto", border: `1px solid ${theme.border}`, borderRadius: 4, boxShadow: "0 12px 48px rgba(0,0,0,0.08)" }} />
+        <p style={{ fontSize: 13, color: theme.muted, margin: "14px 0 44px" }}>Every sign-off is dated. When you edit a procedure, anyone who signed the old version is flagged to sign again.</p>
+        <div className="shot-row" style={{ display: "grid", gridTemplateColumns: "1.6fr 1fr", gap: 28, alignItems: "start", textAlign: "left" }}>
+          <div>
+            <img src="/screens/library.webp" alt="The SpaOps procedure library with search, categories and sign-off counts" loading="lazy" style={{ width: "100%", height: "auto", border: `1px solid ${theme.border}`, borderRadius: 4, boxShadow: "0 12px 48px rgba(0,0,0,0.08)" }} />
+            <p style={{ fontSize: 13, color: theme.muted, marginTop: 14 }}>Your whole library, searchable by category, with sign-off counts on every card.</p>
+          </div>
+          <div>
+            <img src="/screens/phone-detail.webp" alt="A SpaOps procedure and its sign-off record on a phone" loading="lazy" style={{ width: "100%", maxWidth: 300, height: "auto", display: "block", margin: "0 auto", border: `1px solid ${theme.border}`, borderRadius: 18, boxShadow: "0 12px 48px rgba(0,0,0,0.08)" }} />
+            <p style={{ fontSize: 13, color: theme.muted, marginTop: 14, textAlign: "center" }}>Works on any phone, so staff can read and sign anywhere.</p>
+          </div>
+        </div>
+        <div style={{ marginTop: 44, display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+          <a href="/demo" style={{ display: "inline-block", padding: "16px 32px", borderRadius: 2, fontFamily: "'DM Sans',sans-serif", fontSize: 13, fontWeight: 500, letterSpacing: "0.08em", textTransform: "uppercase", textDecoration: "none", color: theme.dark, background: `linear-gradient(135deg, ${theme.goldLight}, ${theme.gold})` }}>Try the live demo →</a>
+        </div>
+      </section>
+
       <section id="portal" className="sec-pad" style={{ maxWidth: 940, margin: "0 auto", padding: "60px 48px 100px", textAlign: "center" }}>
         <h2 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 38, fontWeight: 300, marginBottom: 12 }}>Simple, transparent pricing</h2>
-        <p style={{ color: theme.muted, marginBottom: 48, fontWeight: 300 }}>Two plans. Same system. The difference is how much of me you get.</p>
+        <p style={{ color: theme.muted, marginBottom: 48, fontWeight: 300 }}>Two plans. Same system. Pro is built for one location. Concierge covers up to three and adds more hands-on help.</p>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(300px,100%),1fr))", gap: 24, alignItems: "start" }}>
 
@@ -180,7 +202,7 @@ function Landing({ onStart }: any) {
             <div style={{ fontSize: 12, letterSpacing: "0.12em", textTransform: "uppercase" as const, color: theme.muted, marginBottom: 12 }}>Pro</div>
             <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 54, fontWeight: 300, lineHeight: 1 }}>$1,499<span style={{ fontSize: 17, color: theme.muted }}>/mo</span></div>
             <p style={{ color: theme.muted, margin: "12px 0 28px", fontWeight: 300, fontSize: 14, lineHeight: 1.6 }}>For the spa that has outgrown tribal knowledge.</p>
-            {["Unlimited done-for-you procedures", "Shared team library", "Staff sign-off tracking", "Admin and team member access", "Unlimited monthly revisions", "Quarterly workflow interviews", "Guided onboarding call", "Priority email support", "Multi-location available as add-on"].map(f => (
+            {["One location", "Unlimited SOP generation and self-service editing", "Shared team library, admin and team access", "Staff sign-off tracking with dated records", "Guided onboarding call", "Up to 4 SOP revisions from us each month", "Quarterly workflow review call", "Email support, replies within 2 business days"].map(f => (
               <div key={f} style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: 11 }}>
                 <span style={{ color: theme.sage, flexShrink: 0 }}>✓</span>
                 <span style={{ fontSize: 14, fontWeight: 300, lineHeight: 1.5 }}>{f}</span>
@@ -193,7 +215,7 @@ function Landing({ onStart }: any) {
             <div style={{ fontSize: 12, letterSpacing: "0.12em", textTransform: "uppercase" as const, color: theme.goldLight, marginBottom: 12 }}>Concierge</div>
             <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 54, fontWeight: 300, lineHeight: 1, color: theme.cream }}>$2,500<span style={{ fontSize: 17, color: theme.muted }}>/mo</span></div>
             <p style={{ color: theme.goldLight, margin: "12px 0 28px", fontWeight: 300, fontSize: 14, lineHeight: 1.6, opacity: 0.75 }}>For multi-location practices that want it handled.</p>
-            {["Everything in Pro, plus:", "Monthly workflow interviews", "White-glove onboarding", "On-site onboarding available", "Multi-location included", "Direct line support"].map((f, i) => (
+            {["Everything in Pro, plus:", "Covers up to 3 locations", "Up to 12 SOP revisions from us each month", "Monthly workflow review call", "White-glove onboarding: we help build your first library", "Priority support, replies within 1 business day", "On-site onboarding on request, travel billed separately"].map((f, i) => (
               <div key={f} style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: 11 }}>
                 <span style={{ color: i === 0 ? "transparent" : theme.gold, flexShrink: 0 }}>✓</span>
                 <span style={{ fontSize: 14, fontWeight: i === 0 ? 400 : 300, lineHeight: 1.5, color: i === 0 ? theme.gold : theme.cream }}>{f}</span>
