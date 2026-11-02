@@ -324,9 +324,15 @@ export default function PortalPage() {
         .footer-legal { font-family: 'Helvetica Neue', sans-serif; font-size: 11px; color: #c4b8b2; line-height: 1.6; border-top: 1px solid #e8e0d4; padding-top: 24px; }
         @media (max-width: 600px) {
           .page { padding: 28px 20px 60px; }
-          .hdr { padding: 14px 20px; }
-          .hdr-link { display: none; }
+          .hdr { padding: 12px 16px; flex-wrap: wrap; gap: 8px 12px; }
+          .hdr-left { min-width: 0; flex: 1 1 auto; }
+          .hdr-spa { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 46vw; }
+          .hdr-right { flex-wrap: wrap; gap: 8px 14px; justify-content: flex-end; }
+          .hdr-link { font-size: 13px; padding: 6px 0; }
           .welcome-title { font-size: 26px; }
+          .empty-state { padding: 40px 20px; }
+          .empty { padding: 40px 16px; }
+          .search-wrap { max-width: 100%; }
         }
       `}</style>
     </main>
@@ -543,6 +549,18 @@ function SOPDetail({ sop, signoffs, canManage, orgId, onBack, onSaved }: {
         .so-table { width: 100%; border-collapse: collapse; font-size: 13px; }
         .so-table th { text-align: left; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: #8b6f5e; padding: 8px 12px 8px 0; border-bottom: 1px solid #e8e0d4; }
         .so-table td { padding: 10px 12px 10px 0; border-bottom: 1px solid #f1ebe2; color: #2c2420; white-space: nowrap; }
+        @media (max-width: 600px) {
+          .detail-header { padding: 24px 20px; }
+          .detail-title { font-size: 24px; }
+          .detail-body { padding: 24px 16px; }
+          .section-steps { padding-left: 0; }
+          .section-title { font-size: 18px; }
+          .so-block { padding: 16px; }
+          .ef-row { flex-wrap: wrap; }
+          .ef-row .ef-input { flex: 1 1 200px; min-width: 0; }
+          .ef-section { padding: 12px; }
+          .ef-actions { flex-wrap: wrap; }
+        }
       `}</style>
     </div>
   );
