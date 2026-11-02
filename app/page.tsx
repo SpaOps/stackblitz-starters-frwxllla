@@ -317,6 +317,9 @@ function Intake({ onDone, onBack }: any) {
           <h1 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 36, fontWeight: 300, marginBottom: 10 }}>Tell us about your spa</h1>
           <p style={{ color: theme.muted, fontSize: 15, fontWeight: 300, lineHeight: 1.6 }}>Answer these questions and we'll build a complete professional operations procedure in under 30 seconds.</p>
         </div>
+        <div role="note" style={{ background: "#FBF3E4", border: `1px solid ${theme.goldLight}`, borderRadius: 3, padding: "12px 16px", marginBottom: 28, fontSize: 13, lineHeight: 1.6, color: "#4A4036" }}>
+          <strong style={{ fontWeight: 600 }}>Please do not enter patient names or health information.</strong> Describe your process in general terms only. SpaOps is not set up to store protected patient information.
+        </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
           {!isSignedIn && (
           <div>
@@ -335,7 +338,8 @@ function Intake({ onDone, onBack }: any) {
           ))}
         </div>
         {error && <p style={{ color: theme.rose, marginTop: 12, fontSize: 13 }}>{error}</p>}
-        <div style={{ marginTop: 32 }}><Btn primary full disabled={!filled} onClick={generate}>Build My Operations Manual →</Btn></div>
+        <p style={{ fontSize: 12, color: theme.muted, marginTop: 24, fontWeight: 300, lineHeight: 1.6 }}>Reminder: do not include patient names or health information in your answers.</p>
+        <div style={{ marginTop: 12 }}><Btn primary full disabled={!filled} onClick={generate}>Build My Operations Manual →</Btn></div>
         <p style={{ textAlign: "center", marginTop: 12, fontSize: 12, color: theme.muted }}>No credit card required.</p>
       </div>
     </div>
