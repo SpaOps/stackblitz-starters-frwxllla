@@ -200,9 +200,9 @@ function Landing({ onStart }: any) {
           <div className="price-card" style={{ background: theme.card, border: `2px solid ${theme.gold}`, borderRadius: 4, padding: "48px 36px 36px", position: "relative", textAlign: "left" }}>
             <div style={{ position: "absolute", top: -14, left: "50%", transform: "translateX(-50%)", background: theme.gold, color: theme.dark, padding: "4px 20px", borderRadius: 2, fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase" as const, fontWeight: 500, whiteSpace: "nowrap" as const }}>Most Popular</div>
             <div style={{ fontSize: 12, letterSpacing: "0.12em", textTransform: "uppercase" as const, color: theme.muted, marginBottom: 12 }}>Pro</div>
-            <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 54, fontWeight: 300, lineHeight: 1 }}>$1,499<span style={{ fontSize: 17, color: theme.muted }}>/mo</span></div>
+            <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 54, fontWeight: 300, lineHeight: 1 }}>$299<span style={{ fontSize: 17, color: theme.muted }}>/mo</span></div>
             <p style={{ color: theme.muted, margin: "12px 0 28px", fontWeight: 300, fontSize: 14, lineHeight: 1.6 }}>For the spa that has outgrown tribal knowledge.</p>
-            {["One location", "Unlimited SOP generation and self-service editing", "Shared team library, admin and team access", "Staff sign-off tracking with dated records", "Guided onboarding call", "Up to 4 SOP revisions from us each month", "Quarterly workflow review call", "Email support, replies within 2 business days"].map(f => (
+            {["One location", "Unlimited SOP generation and self-service editing", "Shared team library, admin and team access", "Staff sign-off tracking with dated records", "Guided onboarding call", "Email support, replies within 2 business days"].map(f => (
               <div key={f} style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: 11 }}>
                 <span style={{ color: theme.sage, flexShrink: 0 }}>✓</span>
                 <span style={{ fontSize: 14, fontWeight: 300, lineHeight: 1.5 }}>{f}</span>
@@ -213,9 +213,9 @@ function Landing({ onStart }: any) {
 
           <div className="price-card" style={{ background: theme.dark, border: `1px solid ${theme.dark}`, borderRadius: 4, padding: "48px 36px 36px", textAlign: "left" }}>
             <div style={{ fontSize: 12, letterSpacing: "0.12em", textTransform: "uppercase" as const, color: theme.goldLight, marginBottom: 12 }}>Concierge</div>
-            <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 54, fontWeight: 300, lineHeight: 1, color: theme.cream }}>$2,500<span style={{ fontSize: 17, color: theme.muted }}>/mo</span></div>
+            <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 54, fontWeight: 300, lineHeight: 1, color: theme.cream }}>$499<span style={{ fontSize: 17, color: theme.muted }}>/mo</span></div>
             <p style={{ color: theme.goldLight, margin: "12px 0 28px", fontWeight: 300, fontSize: 14, lineHeight: 1.6, opacity: 0.75 }}>For multi-location practices that want it handled.</p>
-            {["Everything in Pro, plus:", "Covers up to 3 locations", "Up to 12 SOP revisions from us each month", "Monthly workflow review call", "White-glove onboarding: we help build your first library", "Priority support, replies within 1 business day", "On-site onboarding on request, travel billed separately"].map((f, i) => (
+            {["Everything in Pro, plus:", "Covers up to 3 locations", "Up to 2 SOP revisions from us each month", "Monthly workflow review call", "We help build your first library", "Priority support, replies within 1 business day"].map((f, i) => (
               <div key={f} style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: 11 }}>
                 <span style={{ color: i === 0 ? "transparent" : theme.gold, flexShrink: 0 }}>✓</span>
                 <span style={{ fontSize: 14, fontWeight: i === 0 ? 400 : 300, lineHeight: 1.5, color: i === 0 ? theme.gold : theme.cream }}>{f}</span>
@@ -227,7 +227,7 @@ function Landing({ onStart }: any) {
         </div>
 
         <p style={{ color: theme.muted, marginTop: 32, fontWeight: 300, fontSize: 13 }}>
-          No contracts. Cancel anytime.
+          Founding customer pricing: your rate stays locked for as long as you stay. No contracts. Cancel anytime.
         </p>
       </section>
 
