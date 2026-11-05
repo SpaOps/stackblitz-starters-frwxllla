@@ -215,8 +215,8 @@ export default function PortalView({ demo }: { demo?: DemoData }) {
                   </span>
                   {canManage && (
                     <>
-                      <button className="empty-btn" disabled={checkoutBusy} onClick={() => startCheckout("core")}>Subscribe: Pro $1,499/mo</button>
-                      <button className="empty-btn" disabled={checkoutBusy} onClick={() => startCheckout("premium")}>Concierge $2,500/mo</button>
+                      <button className="empty-btn" disabled={checkoutBusy} onClick={() => startCheckout("core")}>Subscribe: Pro $299/mo</button>
+                      <button className="empty-btn" disabled={checkoutBusy} onClick={() => startCheckout("premium")}>Concierge $499/mo</button>
                     </>
                   )}
                   {checkoutError && <span style={{ color: "#b3261e", fontSize: 13 }}>{checkoutError}</span>}
